@@ -1,0 +1,1404 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Superpowers 项目说明书</title>
+<style>
+  :root {
+    --bg: #0f111a;
+    --bg-card: #1a1d2e;
+    --bg-card-hover: #222640;
+    --border: #2a2e45;
+    --text: #e2e8f0;
+    --text-dim: #8892b0;
+    --accent: #64ffda;
+    --accent2: #7c3aed;
+    --accent3: #f59e0b;
+    --accent4: #ef4444;
+    --accent5: #3b82f6;
+    --accent6: #ec4899;
+    --gradient1: linear-gradient(135deg, #64ffda 0%, #7c3aed 100%);
+    --gradient2: linear-gradient(135deg, #7c3aed 0%, #ec4899 100%);
+    --radius: 12px;
+    --shadow: 0 4px 24px rgba(0,0,0,0.3);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--accent2); border-radius: 3px; }
+
+  /* Hero */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at 30% 40%, rgba(100,255,218,0.08) 0%, transparent 50%),
+                radial-gradient(circle at 70% 60%, rgba(124,58,237,0.08) 0%, transparent 50%);
+    animation: heroBg 20s ease-in-out infinite;
+  }
+
+  @keyframes heroBg {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(-5%, 5%); }
+  }
+
+  .hero-content { position: relative; z-index: 1; max-width: 900px; padding: 2rem; }
+
+  .hero h1 {
+    font-size: clamp(3rem, 8vw, 6rem);
+    font-weight: 800;
+    background: var(--gradient1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 1rem;
+    letter-spacing: -2px;
+  }
+
+  .hero .version {
+    display: inline-block;
+    padding: 4px 16px;
+    border: 1px solid var(--accent);
+    border-radius: 20px;
+    color: var(--accent);
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+    font-family: 'SF Mono', monospace;
+  }
+
+  .hero p {
+    font-size: 1.3rem;
+    color: var(--text-dim);
+    max-width: 700px;
+    margin: 0 auto 2.5rem;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 3rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .hero-stat {
+    text-align: center;
+  }
+
+  .hero-stat .num {
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: var(--gradient1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-stat .label {
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  /* Nav */
+  .nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: rgba(15,17,26,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    transform: translateY(-100%);
+    transition: transform 0.3s ease;
+  }
+
+  .nav.visible { transform: translateY(0); }
+
+  .nav-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    overflow-x: auto;
+  }
+
+  .nav-logo {
+    font-weight: 800;
+    font-size: 1.1rem;
+    background: var(--gradient1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .nav a {
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    transition: color 0.2s;
+  }
+
+  .nav a:hover { color: var(--accent); }
+
+  /* Sections */
+  .section {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 5rem 2rem;
+  }
+
+  .section-header {
+    margin-bottom: 3rem;
+  }
+
+  .section-tag {
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 1rem;
+    font-weight: 600;
+  }
+
+  .tag-green { background: rgba(100,255,218,0.1); color: var(--accent); border: 1px solid rgba(100,255,218,0.2); }
+  .tag-purple { background: rgba(124,58,237,0.1); color: var(--accent2); border: 1px solid rgba(124,58,237,0.2); }
+  .tag-amber { background: rgba(245,158,11,0.1); color: var(--accent3); border: 1px solid rgba(245,158,11,0.2); }
+  .tag-red { background: rgba(239,68,68,0.1); color: var(--accent4); border: 1px solid rgba(239,68,68,0.2); }
+  .tag-blue { background: rgba(59,130,246,0.1); color: var(--accent5); border: 1px solid rgba(59,130,246,0.2); }
+  .tag-pink { background: rgba(236,72,153,0.1); color: var(--accent6); border: 1px solid rgba(236,72,153,0.2); }
+
+  .section-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .section-desc {
+    color: var(--text-dim);
+    font-size: 1.05rem;
+    max-width: 700px;
+  }
+
+  /* Cards */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.8rem;
+    transition: all 0.3s ease;
+    cursor: default;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card:hover {
+    background: var(--bg-card-hover);
+    border-color: rgba(100,255,218,0.3);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+  }
+
+  .card-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+  }
+
+  .card h3 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  .card p {
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  .card .trigger {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.8rem;
+    color: var(--accent);
+    font-family: 'SF Mono', Consolas, monospace;
+  }
+
+  .card .iron-law {
+    margin-top: 0.8rem;
+    padding: 0.5rem 0.8rem;
+    background: rgba(239,68,68,0.08);
+    border-left: 3px solid var(--accent4);
+    border-radius: 0 6px 6px 0;
+    font-size: 0.8rem;
+    color: var(--accent4);
+    font-weight: 600;
+  }
+
+  /* Workflow */
+  .workflow {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    overflow-x: auto;
+    padding: 2rem 0;
+    position: relative;
+  }
+
+  .workflow-step {
+    flex: 0 0 200px;
+    text-align: center;
+    position: relative;
+    padding: 0 0.5rem;
+  }
+
+  .workflow-step::after {
+    content: '→';
+    position: absolute;
+    right: -12px;
+    top: 36px;
+    font-size: 1.5rem;
+    color: var(--accent);
+    z-index: 2;
+  }
+
+  .workflow-step:last-child::after { display: none; }
+
+  .workflow-num {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.1rem;
+    margin: 0 auto 0.8rem;
+    border: 2px solid;
+  }
+
+  .workflow-step h4 {
+    font-size: 0.9rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .workflow-step p {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    line-height: 1.4;
+  }
+
+  /* Architecture Table */
+  .arch-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1.5rem;
+  }
+
+  .arch-table th, .arch-table td {
+    padding: 1rem 1.2rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .arch-table th {
+    background: var(--bg-card);
+    color: var(--accent);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 600;
+  }
+
+  .arch-table td {
+    font-size: 0.9rem;
+    color: var(--text-dim);
+  }
+
+  .arch-table tr:hover td {
+    background: var(--bg-card);
+    color: var(--text);
+  }
+
+  .arch-table .platform-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+
+  /* Directory tree */
+  .dir-tree {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2rem;
+    font-family: 'SF Mono', Consolas, monospace;
+    font-size: 0.85rem;
+    line-height: 1.9;
+    overflow-x: auto;
+  }
+
+  .dir-tree .dir { color: var(--accent5); font-weight: 600; }
+  .dir-tree .file { color: var(--text-dim); }
+  .dir-tree .comment { color: #4a5568; font-style: italic; }
+
+  /* Philosophy */
+  .philosophy-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.2rem;
+  }
+
+  .philosophy-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s;
+  }
+
+  .philosophy-item:hover {
+    border-color: rgba(124,58,237,0.4);
+    transform: translateY(-2px);
+  }
+
+  .philosophy-item .icon {
+    font-size: 2rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .philosophy-item h4 {
+    font-size: 1rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .philosophy-item p {
+    color: var(--text-dim);
+    font-size: 0.82rem;
+  }
+
+  /* Skill detail modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(8px);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+
+  .modal-overlay.active { display: flex; }
+
+  .modal {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    max-width: 700px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 2.5rem;
+    position: relative;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 1.5rem;
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s;
+  }
+
+  .modal-close:hover { background: rgba(255,255,255,0.1); color: var(--text); }
+
+  .modal h2 { font-size: 1.5rem; margin-bottom: 0.3rem; }
+  .modal .modal-trigger { color: var(--accent); font-size: 0.85rem; margin-bottom: 1rem; font-family: 'SF Mono', monospace; }
+  .modal .modal-section { margin-top: 1.5rem; }
+  .modal .modal-section h4 { color: var(--accent2); font-size: 0.9rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 1px; }
+  .modal .modal-section p, .modal .modal-section li { color: var(--text-dim); font-size: 0.9rem; }
+  .modal .modal-section ul { padding-left: 1.2rem; }
+  .modal .modal-section li { margin-bottom: 0.3rem; }
+
+  /* Divider */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: 0 auto;
+    max-width: 1200px;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .footer a { color: var(--accent); text-decoration: none; }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .card-grid { grid-template-columns: 1fr; }
+    .hero-stats { gap: 1.5rem; }
+    .workflow { flex-direction: column; align-items: center; }
+    .workflow-step { flex: none; width: 100%; max-width: 300px; }
+    .workflow-step::after { content: '↓'; right: auto; left: 50%; top: auto; bottom: -16px; transform: translateX(-50%); }
+    .nav-inner { gap: 1rem; }
+    .section { padding: 3rem 1.2rem; }
+  }
+
+  /* Animations */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s ease;
+  }
+
+  .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Skill category tabs */
+  .skill-tabs {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+  }
+
+  .skill-tab {
+    padding: 6px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    font-size: 0.82rem;
+    transition: all 0.2s;
+  }
+
+  .skill-tab:hover, .skill-tab.active {
+    background: rgba(100,255,218,0.1);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .card.hidden { display: none; }
+
+  /* Command Manual */
+  .cmd-list { display: flex; flex-direction: column; gap: 1rem; }
+
+  .cmd-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+
+  .cmd-item:hover { border-color: rgba(100,255,218,0.3); }
+
+  .cmd-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.2rem 1.5rem;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .cmd-header:hover { background: var(--bg-card-hover); }
+
+  .cmd-num {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .cmd-header h4 { flex: 1; font-size: 1rem; }
+
+  .cmd-invoke {
+    font-family: 'SF Mono', Consolas, monospace;
+    font-size: 0.78rem;
+    padding: 3px 10px;
+    border-radius: 6px;
+    background: rgba(100,255,218,0.08);
+    color: var(--accent);
+    border: 1px solid rgba(100,255,218,0.15);
+    flex-shrink: 0;
+  }
+
+  .cmd-arrow {
+    font-size: 1.2rem;
+    color: var(--text-dim);
+    transition: transform 0.3s;
+    flex-shrink: 0;
+  }
+
+  .cmd-item.open .cmd-arrow { transform: rotate(90deg); }
+
+  .cmd-body {
+    display: none;
+    padding: 0 1.5rem 1.5rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .cmd-item.open .cmd-body { display: block; padding-top: 1.2rem; }
+
+  .cmd-body .cmd-row {
+    display: flex;
+    gap: 0.8rem;
+    margin-bottom: 0.8rem;
+    font-size: 0.88rem;
+  }
+
+  .cmd-body .cmd-label {
+    color: var(--accent2);
+    font-weight: 600;
+    min-width: 90px;
+    flex-shrink: 0;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding-top: 2px;
+  }
+
+  .cmd-body .cmd-val { color: var(--text-dim); line-height: 1.6; }
+
+  .cmd-body code {
+    background: rgba(100,255,218,0.06);
+    color: var(--accent);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: 'SF Mono', Consolas, monospace;
+    font-size: 0.82rem;
+  }
+
+  .cmd-body .deprecated-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.72rem;
+    background: rgba(245,158,11,0.12);
+    color: var(--accent3);
+    border: 1px solid rgba(245,158,11,0.25);
+    font-weight: 600;
+    margin-left: 0.3rem;
+  }
+
+  .cmd-body .auto-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.72rem;
+    background: rgba(100,255,218,0.1);
+    color: var(--accent);
+    border: 1px solid rgba(100,255,218,0.2);
+    font-weight: 600;
+  }
+
+  .cmd-search {
+    width: 100%;
+    padding: 0.8rem 1.2rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    color: var(--text);
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+
+  .cmd-search:focus { border-color: var(--accent); }
+  .cmd-search::placeholder { color: #4a5568; }
+
+  .platform-invoke-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .platform-invoke-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.2rem;
+  }
+
+  .platform-invoke-card h4 {
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    color: var(--accent);
+  }
+
+  .platform-invoke-card code {
+    display: block;
+    background: rgba(0,0,0,0.3);
+    padding: 0.6rem 0.8rem;
+    border-radius: 6px;
+    font-family: 'SF Mono', Consolas, monospace;
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    margin-top: 0.3rem;
+    word-break: break-all;
+  }
+
+  .platform-invoke-card p {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-top: 0.4rem;
+  }
+</style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <div class="nav-logo">Superpowers</div>
+    <a href="#overview">概览</a>
+    <a href="#philosophy">设计理念</a>
+    <a href="#structure">项目结构</a>
+    <a href="#workflow">工作流</a>
+    <a href="#skills">核心技能</a>
+    <a href="#hooks">Hooks 系统</a>
+    <a href="#platform">多平台支持</a>
+    <a href="#testing">测试体系</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="version">v5.0.7</div>
+    <h1>Superpowers</h1>
+    <p>为 AI 编码代理打造的完整软件开发工作流系统 —— 基于可组合的 Skills 插件架构，让 AI 遵循经过验证的软件工程流程</p>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="num">14</div>
+        <div class="label">核心技能</div>
+      </div>
+      <div class="hero-stat">
+        <div class="num">6+</div>
+        <div class="label">支持平台</div>
+      </div>
+      <div class="hero-stat">
+        <div class="num">0</div>
+        <div class="label">外部依赖</div>
+      </div>
+      <div class="hero-stat">
+        <div class="num">MIT</div>
+        <div class="label">开源协议</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Overview -->
+<div class="divider"></div>
+<section class="section fade-in" id="overview">
+  <div class="section-header">
+    <div class="section-tag tag-green">Overview</div>
+    <h2 class="section-title">项目概览</h2>
+    <p class="section-desc">Superpowers 是一个结构化的、强制纪律执行的工作流系统，引导 AI 编码代理完成完整的开发周期</p>
+  </div>
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-icon" style="background:rgba(100,255,218,0.1);">&#9889;</div>
+      <h3>是什么</h3>
+      <p>一套以 "Skills" 为核心的可组合插件系统，为 AI 代理提供从头脑风暴、设计、计划、实现、代码审查到分支管理的完整开发工作流。Skills 基于上下文自动触发，无需用户手动调用。</p>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:rgba(124,58,237,0.1);">&#127919;</div>
+      <h3>解决什么问题</h3>
+      <p>AI 代理在自由发挥时容易跳过测试、忽略根因分析、声称修复但未验证。Superpowers 通过 "铁律"（Iron Laws）和 "红旗检测"（Red Flags）强制代理遵循 TDD、系统性调试、完成前验证等工程规范。</p>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:rgba(245,158,11,0.1);">&#128736;</div>
+      <h3>核心特征</h3>
+      <p>零依赖设计 / 测试驱动开发为铁律 / 系统性优于即兴 / 复杂度最小化 / 证据优于声称 / 多平台插件架构 / 子代理驱动的并行开发</p>
+    </div>
+  </div>
+</section>
+
+<!-- Philosophy -->
+<div class="divider"></div>
+<section class="section fade-in" id="philosophy">
+  <div class="section-header">
+    <div class="section-tag tag-purple">Philosophy</div>
+    <h2 class="section-title">设计理念</h2>
+    <p class="section-desc">每个设计决策背后都有经过实战检验的理由</p>
+  </div>
+  <div class="philosophy-grid">
+    <div class="philosophy-item">
+      <div class="icon">&#128302;</div>
+      <h4>零外部依赖</h4>
+      <p>核心插件不引入任何第三方依赖，保持极致的可移植性和稳定性</p>
+    </div>
+    <div class="philosophy-item">
+      <div class="icon">&#128308;</div>
+      <h4>TDD 铁律</h4>
+      <p>"没有失败测试就不写生产代码" —— 这不是建议，是强制执行的规则</p>
+    </div>
+    <div class="philosophy-item">
+      <div class="icon">&#128269;</div>
+      <h4>证据优于声称</h4>
+      <p>所有完成声明必须附带新鲜的验证证据，不接受 "应该可以" 或缓存结果</p>
+    </div>
+    <div class="philosophy-item">
+      <div class="icon">&#129520;</div>
+      <h4>系统性优于即兴</h4>
+      <p>调试遵循根因分析，不允许随机尝试修复；开发遵循计划，不允许跳步骤</p>
+    </div>
+    <div class="philosophy-item">
+      <div class="icon">&#9878;</div>
+      <h4>YAGNI 原则</h4>
+      <p>只做当前需要的最小改动，不过度工程化，三行重复代码好过提前抽象</p>
+    </div>
+    <div class="philosophy-item">
+      <div class="icon">&#129309;</div>
+      <h4>"你的人类伙伴"</h4>
+      <p>刻意使用 "your human partner" 而非 "the user" —— 这是精心设计的行为塑造语言</p>
+    </div>
+  </div>
+</section>
+
+<!-- Structure -->
+<div class="divider"></div>
+<section class="section fade-in" id="structure">
+  <div class="section-header">
+    <div class="section-tag tag-blue">Structure</div>
+    <h2 class="section-title">项目结构</h2>
+    <p class="section-desc">清晰的目录组织，每个模块职责分明</p>
+  </div>
+  <div class="dir-tree">
+    <span class="dir">superpowers/</span><br>
+    ├── <span class="dir">skills/</span> <span class="comment">── 14 个核心技能模块，每个包含 SKILL.md 和支撑文件</span><br>
+    │   ├── <span class="dir">brainstorming/</span> <span class="comment">── 头脑风暴与设计</span><br>
+    │   ├── <span class="dir">writing-plans/</span> <span class="comment">── 实现计划编写</span><br>
+    │   ├── <span class="dir">subagent-driven-development/</span> <span class="comment">── 子代理驱动开发</span><br>
+    │   ├── <span class="dir">executing-plans/</span> <span class="comment">── 计划执行</span><br>
+    │   ├── <span class="dir">test-driven-development/</span> <span class="comment">── 测试驱动开发</span><br>
+    │   ├── <span class="dir">systematic-debugging/</span> <span class="comment">── 系统性调试</span><br>
+    │   ├── <span class="dir">verification-before-completion/</span> <span class="comment">── 完成前验证</span><br>
+    │   ├── <span class="dir">requesting-code-review/</span> <span class="comment">── 请求代码审查</span><br>
+    │   ├── <span class="dir">receiving-code-review/</span> <span class="comment">── 接收代码审查</span><br>
+    │   ├── <span class="dir">dispatching-parallel-agents/</span> <span class="comment">── 并行代理调度</span><br>
+    │   ├── <span class="dir">using-git-worktrees/</span> <span class="comment">── Git Worktree 使用</span><br>
+    │   ├── <span class="dir">finishing-a-development-branch/</span> <span class="comment">── 开发分支收尾</span><br>
+    │   ├── <span class="dir">using-superpowers/</span> <span class="comment">── 技能调度引导（每次会话注入）</span><br>
+    │   └── <span class="dir">writing-skills/</span> <span class="comment">── 技能编写指南</span><br>
+    ├── <span class="dir">hooks/</span> <span class="comment">── 会话启动钩子（跨平台支持）</span><br>
+    │   ├── <span class="file">session-start</span> <span class="comment">── Bash 脚本，注入 using-superpowers 上下文</span><br>
+    │   ├── <span class="file">hooks.json</span> <span class="comment">── Claude Code 格式配置</span><br>
+    │   ├── <span class="file">hooks-cursor.json</span> <span class="comment">── Cursor 格式配置</span><br>
+    │   └── <span class="file">run-hook.cmd</span> <span class="comment">── Windows/Unix 多语言兼容包装器</span><br>
+    ├── <span class="dir">agents/</span> <span class="comment">── 代理定义</span><br>
+    │   └── <span class="file">code-reviewer.md</span> <span class="comment">── 高级代码审查员</span><br>
+    ├── <span class="dir">commands/</span> <span class="comment">── 废弃的斜杠命令（已重定向到 skills）</span><br>
+    ├── <span class="dir">docs/</span> <span class="comment">── 平台文档、实现计划、设计规格</span><br>
+    ├── <span class="dir">tests/</span> <span class="comment">── 集成测试（技能触发、子代理开发等）</span><br>
+    ├── <span class="dir">scripts/</span> <span class="comment">── 版本管理工具</span><br>
+    ├── <span class="dir">.claude-plugin/</span> <span class="comment">── Claude Code 插件清单</span><br>
+    ├── <span class="dir">.cursor-plugin/</span> <span class="comment">── Cursor 插件清单</span><br>
+    ├── <span class="dir">.opencode/</span> <span class="comment">── OpenCode 插件加载器</span><br>
+    ├── <span class="dir">.codex/</span> <span class="comment">── Codex 安装说明</span><br>
+    └── <span class="dir">.github/</span> <span class="comment">── PR/Issue 模板、资助配置</span><br>
+  </div>
+</section>
+
+<!-- Workflow -->
+<div class="divider"></div>
+<section class="section fade-in" id="workflow">
+  <div class="section-header">
+    <div class="section-tag tag-amber">Workflow</div>
+    <h2 class="section-title">端到端工作流</h2>
+    <p class="section-desc">Skills 基于上下文自动触发，引导代理完成完整开发周期</p>
+  </div>
+  <div class="workflow">
+    <div class="workflow-step">
+      <div class="workflow-num" style="border-color:var(--accent);color:var(--accent);">1</div>
+      <h4>会话初始化</h4>
+      <p>session-start 钩子注入 using-superpowers 技能上下文</p>
+    </div>
+    <div class="workflow-step">
+      <div class="workflow-num" style="border-color:var(--accent2);color:var(--accent2);">2</div>
+      <h4>头脑风暴</h4>
+      <p>澄清需求 → 探索方案 → 编写设计文档 → 用户审批</p>
+    </div>
+    <div class="workflow-step">
+      <div class="workflow-num" style="border-color:var(--accent3);color:var(--accent3);">3</div>
+      <h4>编写计划</h4>
+      <p>将设计拆分为小步骤的 TDD 任务，每步含具体代码和命令</p>
+    </div>
+    <div class="workflow-step">
+      <div class="workflow-num" style="border-color:var(--accent5);color:var(--accent5);">4</div>
+      <h4>实现开发</h4>
+      <p>子代理并行执行 + TDD 强制 + 系统性调试 + 双阶段审查</p>
+    </div>
+    <div class="workflow-step">
+      <div class="workflow-num" style="border-color:var(--accent6);color:var(--accent6);">5</div>
+      <h4>验证 & 审查</h4>
+      <p>完成前验证 + 代码审查 + 规格合规检查</p>
+    </div>
+    <div class="workflow-step">
+      <div class="workflow-num" style="border-color:var(--accent4);color:var(--accent4);">6</div>
+      <h4>分支收尾</h4>
+      <p>测试通过 → 合并/PR/保留/丢弃四选一 → 清理 worktree</p>
+    </div>
+  </div>
+</section>
+
+<!-- Skills -->
+<div class="divider"></div>
+<section class="section fade-in" id="skills">
+  <div class="section-header">
+    <div class="section-tag tag-green">Core Skills</div>
+    <h2 class="section-title">14 项核心技能</h2>
+    <p class="section-desc">每项技能都是塑造代理行为的代码，而非简单的文档</p>
+  </div>
+
+  <div class="skill-tabs">
+    <button class="skill-tab active" data-filter="all">全部</button>
+    <button class="skill-tab" data-filter="design">设计阶段</button>
+    <button class="skill-tab" data-filter="dev">开发阶段</button>
+    <button class="skill-tab" data-filter="quality">质量保障</button>
+    <button class="skill-tab" data-filter="ops">流程管理</button>
+  </div>
+
+  <div class="card-grid" id="skill-cards">
+
+    <!-- Brainstorming -->
+    <div class="card" data-category="design" data-skill="brainstorming" onclick="openModal(this)">
+      <div class="card-icon" style="background:rgba(245,158,11,0.1);">&#128161;</div>
+      <h3>Brainstorming 头脑风暴</h3>
+      <p>在任何创造性工作之前激活。通过逐步澄清问题、探索 2-3 种方案、编写设计文档，确保在动手之前充分理解需求。</p>
+      <div class="trigger">触发：功能设计、组件创建、功能修改之前</div>
+    </div>
+
+    <!-- Writing Plans -->
+    <div class="card" data-category="design" data-skill="writing-plans" onclick="openModal(this)">
+      <div class="card-icon" style="background:rgba(59,130,246,0.1);">&#128221;</div>
+      <h3>Writing Plans 编写计划</h3>
+      <p>将设计规格转化为可执行的实现计划。每个任务控制在 2-5 分钟，包含精确文件路径、完整代码块和具体命令，杜绝 TBD/TODO 等占位符。</p>
+      <div class="trigger">触发：有了规格/需求，准备拆解实现步骤时</div>
+    </div>
+
+    <!-- Subagent-Driven Development -->
+    <div class="card" data-category="dev" data-skill="subagent-driven-dev" onclick="openModal(this)">
+      <div class="card-icon" style="background:rgba(124,58,237,0.1);">&#129302;</div>
+      <h3>Subagent-Driven Dev 子代理驱动开发</h3>
+      <p>为每个任务分派独立的实现子代理，完成后进行双阶段审查（规格合规 + 代码质量）。支持智能模型选择：简单任务用廉价模型，架构决策用最强模型。</p>
+      <div class="trigger">触发：执行含独立任务的实现计划时</div>
+    </div>
+
+    <!-- Executing Plans -->
+    <div class="card" data-category="dev" data-skill="executing-plans" onclick="openModal(this)">
+      <div class="card-icon" style="background:rgba(100,255,218,0.1);">&#9654;</div>
+      <h3>Executing Plans 执行计划</h3>
+      <p>加载实现计划并逐步执行，适用于不支持子代理的平台。在每个检查点验证进度，完成后触发分支收尾流程。</p>
+      <div class="trigger">触发：在独立会话中执行已编写的实现计划时</div>
+    </div>
+
+    <!-- TDD -->
+    <div class="card" data-category="quality" data-skill="tdd" onclick="openModal(this)">
+      <div class="card-icon" style="background:rgba(239,68,68,0.1);">&#128308;</div>
+      <h3>Test-Driven Development 测试驱动开发</h3>
+      <p>强制执行 RED → GREEN → REFACTOR 循环。包含大量 "合理化思维" 检测表和红旗列表，封堵所有常见的跳过测试借口。</p>
+      <div class="trigger">触发：在编写任何生产代码之前</div>
+      <div class="iron-law">铁律：没有失败测试就不写生产代码</div>
+    </div>
+
+    <!-- Systematic Debugging -->
+    <div class="card" data-category="quality" data-skill="debugging" onclick="openModal(this)">
+      <div class="card-icon" style="background:rgba(245,158,11,0.1);">&#128027;</div>
+      <h3>Systematic Debugging 系统性调试</h3>
+      <p>四阶段方法论：根因调查 → 模式分析 → 假设检验 → 实施修复。3 次失败修复后必须停下来质疑架构。附带多个实用脚本和参考文档。</p>
+      <div class="trigger">触发：任何 bug、测试失败或意外行为</div>
+      <div class="iron-law">铁律：不做根因分析就不修复</div>
+    </div>
+
+    <!-- Verification -->
+    <div class="card" data-category="quality" data-skill="verification" onclick="openModal(this)">
+      <div class="card-icon" style="background:rgba(100,255,218,0.1);">&#9989;</div>
+      <h3>Verification Before Completion 完成前验证</h3>
+      <p>在声称任何工作已完成之前，必须运行验证命令、读取完整输出、确认结果。不接受基于记忆或缓存的 "应该没问题"。</p>
+      <div class="trigger">触发：声称工作完成、修复成功、测试通过之前</div>
+      <div class="iron-law">铁律：没有新鲜验证证据就不声称完成</div>
+    </div>
+
+    <!-- Requesting Code Review -->
+    <div class="card" data-category="quality" data-skill="request-review" onclick="openModal(this)">
+      <div class="card-icon" style="background:rgba(236,72,153,0.1);">&#128269;</div>
+      <h3>Requesting Code Review 请求代码审查</h3>
+      <p>获取 Git SHA，使用模板分派代码审查子代理。审查员会对照计划/规格检查实现，发现问题分为关键/重要/建议三级。</p>
+      <div class="trigger">触发：完成任务、实现功能、合并前</div>
+    </div>
+
+    <!-- Receiving Code Review -->
+    <div class="card" data-category="quality" data-skill="receive-review" onclick="openModal(this)">
+      <div class="card-icon" style="background:rgba(124,58,237,0.1);">&#128172;</div>
+      <h3>Receiving Code Review 接收代码审查</h3>
+      <p>收到反馈时的行为准则：禁止表演性附和（"说得太对了！"），验证后再实施，审查员错误时用技术论据反驳，对 "专业" 建议执行 YAGNI 检查。</p>
+      <div class="trigger">触发：收到反馈，尤其是不确定或有疑问时</div>
+    </div>
+
+    <!-- Parallel Agents -->
+    <div class="card" data-category="ops" data-skill="parallel-agents" onclick="openModal(this)">
+      <div class="card-icon" style="background:rgba(59,130,246,0.1);">&#9878;</div>
+      <h3>Dispatching Parallel Agents 并行代理调度</h3>
+      <p>识别无共享状态的独立任务，创建聚焦的代理任务描述，并行分派执行，最后审查和集成结果。</p>
+      <div class="trigger">触发：2+ 个无共享状态的独立任务</div>
+    </div>
+
+    <!-- Git Worktrees -->
+    <div class="card" data-category="ops" data-skill="worktrees" onclick="openModal(this)">
+      <div class="card-icon" style="background:rgba(245,158,11,0.1);">&#127795;</div>
+      <h3>Using Git Worktrees 使用 Git 工作树</h3>
+      <p>为功能开发创建隔离的工作树，检查现有目录规范、确保 gitignore、运行项目初始化、验证测试基线。</p>
+      <div class="trigger">触发：开始需要隔离的功能开发、执行计划前</div>
+    </div>
+
+    <!-- Finishing Branch -->
+    <div class="card" data-category="ops" data-skill="finish-branch" onclick="openModal(this)">
+      <div class="card-icon" style="background:rgba(100,255,218,0.1);">&#127937;</div>
+      <h3>Finishing Dev Branch 开发分支收尾</h3>
+      <p>验证测试全部通过后，精确提供四个选项：本地合并、创建 PR、保持原样、丢弃。执行选择后清理工作树。</p>
+      <div class="trigger">触发：实现完成且所有测试通过</div>
+    </div>
+
+    <!-- Using Superpowers -->
+    <div class="card" data-category="ops" data-skill="using-superpowers" onclick="openModal(this)">
+      <div class="card-icon" style="background:rgba(236,72,153,0.1);">&#128640;</div>
+      <h3>Using Superpowers 技能调度引导</h3>
+      <p>每次会话启动时注入。核心规则：即使只有 1% 的适用概率也要调用相关技能。包含红旗检测表、技能优先级、平台适配说明。</p>
+      <div class="trigger">触发：每次会话开始（通过 hook 自动注入）</div>
+    </div>
+
+    <!-- Writing Skills -->
+    <div class="card" data-category="ops" data-skill="writing-skills" onclick="openModal(this)">
+      <div class="card-icon" style="background:rgba(124,58,237,0.1);">&#9997;</div>
+      <h3>Writing Skills 技能编写</h3>
+      <p>用 TDD 方法论编写技能本身：基线测试（无技能）→ 编写最小技能 → 堵漏洞。包含 Claude 搜索优化（CSO）、说服力原则、测试方法论。</p>
+      <div class="trigger">触发：创建、编辑或验证技能时</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- Hooks -->
+<div class="divider"></div>
+<section class="section fade-in" id="hooks">
+  <div class="section-header">
+    <div class="section-tag tag-amber">Hooks</div>
+    <h2 class="section-title">Hooks 系统</h2>
+    <p class="section-desc">会话启动时自动注入技能上下文，跨平台兼容</p>
+  </div>
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-icon" style="background:rgba(100,255,218,0.1);">&#9889;</div>
+      <h3>Session Start Hook</h3>
+      <p>核心钩子。读取 <code>using-superpowers/SKILL.md</code>，转义为 JSON 格式，根据平台环境变量自动选择输出格式（Claude Code / Cursor / SDK 标准）。</p>
+      <div class="trigger">事件：startup / clear / compact</div>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:rgba(245,158,11,0.1);">&#128421;</div>
+      <h3>跨平台兼容</h3>
+      <p><code>run-hook.cmd</code> 是一个多语言文件（同时是 batch 和 bash），在 Windows 上自动查找 Git Bash 执行钩子脚本，在 Unix 上直接运行。</p>
+      <div class="trigger">搜索路径：Program Files → x86 → PATH</div>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:rgba(124,58,237,0.1);">&#128260;</div>
+      <h3>平台检测逻辑</h3>
+      <p>通过环境变量自动识别平台：<code>CURSOR_PLUGIN_ROOT</code> → Cursor 格式 / <code>CLAUDE_PLUGIN_ROOT</code> → Claude Code 格式 / 其他 → SDK 标准格式。同时检测旧版配置并提示迁移。</p>
+    </div>
+  </div>
+</section>
+
+<!-- Platform -->
+<div class="divider"></div>
+<section class="section fade-in" id="platform">
+  <div class="section-header">
+    <div class="section-tag tag-pink">Multi-Platform</div>
+    <h2 class="section-title">多平台支持</h2>
+    <p class="section-desc">一套技能，适配六大 AI 编码平台</p>
+  </div>
+  <div style="overflow-x:auto;">
+    <table class="arch-table">
+      <thead>
+        <tr>
+          <th>平台</th>
+          <th>插件机制</th>
+          <th>配置文件</th>
+          <th>特殊适配</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="platform-badge tag-green">Claude Code</span></td>
+          <td>插件市场安装</td>
+          <td><code>.claude-plugin/plugin.json</code></td>
+          <td>原生支持所有功能，包括子代理</td>
+        </tr>
+        <tr>
+          <td><span class="platform-badge tag-purple">Cursor</span></td>
+          <td>插件市场安装</td>
+          <td><code>.cursor-plugin/plugin.json</code></td>
+          <td>显式声明 skills/agents/commands/hooks 路径</td>
+        </tr>
+        <tr>
+          <td><span class="platform-badge tag-blue">Codex</span></td>
+          <td>Git clone + 符号链接</td>
+          <td><code>.codex/INSTALL.md</code></td>
+          <td>链接到 <code>~/.agents/skills/</code></td>
+        </tr>
+        <tr>
+          <td><span class="platform-badge tag-amber">OpenCode</span></td>
+          <td>npm 包（从 git）</td>
+          <td><code>.opencode/plugins/superpowers.js</code></td>
+          <td>ES Module，通过 config hook 和消息转换注入</td>
+        </tr>
+        <tr>
+          <td><span class="platform-badge tag-red">GitHub Copilot CLI</span></td>
+          <td>插件市场</td>
+          <td><code>hooks.json</code> (SDK 格式)</td>
+          <td>专用工具映射参考文档</td>
+        </tr>
+        <tr>
+          <td><span class="platform-badge tag-pink">Gemini CLI</span></td>
+          <td>Extensions 系统</td>
+          <td><code>gemini-extension.json</code></td>
+          <td>使用 <code>@</code> 语法加载技能和工具映射</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- Testing -->
+<div class="divider"></div>
+<section class="section fade-in" id="testing">
+  <div class="section-header">
+    <div class="section-tag tag-red">Testing</div>
+    <h2 class="section-title">测试体系</h2>
+    <p class="section-desc">通过真实 AI 会话进行集成测试，解析会话日志验证行为</p>
+  </div>
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-icon" style="background:rgba(239,68,68,0.1);">&#128300;</div>
+      <h3>技能触发测试</h3>
+      <p>6 个场景验证技能是否从上下文提示中自动触发。运行真实 Claude Code 会话，解析 <code>.jsonl</code> 会话记录。</p>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:rgba(59,130,246,0.1);">&#128203;</div>
+      <h3>显式请求测试</h3>
+      <p>9 个提示场景验证当用户明确请求时技能能否正确激活。覆盖各种表述方式和边界情况。</p>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:rgba(100,255,218,0.1);">&#9881;</div>
+      <h3>子代理开发端到端测试</h3>
+      <p>使用真实项目（Go 分形、Svelte Todo）进行完整的子代理驱动开发流程测试。包含 Token 用量分析。</p>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:rgba(245,158,11,0.1);">&#128336;</div>
+      <h3>测试执行</h3>
+      <p>以无头模式运行真实 Claude Code 会话，通过 <code>--permission-mode bypassPermissions</code> 授权。单次测试可能耗时 10-30 分钟。</p>
+    </div>
+  </div>
+</section>
+
+<!-- Agents -->
+<div class="divider"></div>
+<section class="section fade-in" id="agents">
+  <div class="section-header">
+    <div class="section-tag tag-purple">Agents</div>
+    <h2 class="section-title">内置代理</h2>
+  </div>
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-icon" style="background:rgba(124,58,237,0.1);">&#129333;</div>
+      <h3>Code Reviewer 代码审查员</h3>
+      <p>高级代码审查员角色。对照计划/规格检查实现，评估计划对齐度、代码质量、架构设计、文档规范。问题分为关键（Critical）、重要（Important）、建议（Suggestions）三级。继承当前会话模型。</p>
+      <div class="trigger">文件：agents/code-reviewer.md</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- Footer -->
+<footer class="footer">
+  <p><strong>Superpowers</strong> v5.0.7 &middot; 作者：Jesse Vincent (Prime Radiant) &middot; MIT License</p>
+  <p style="margin-top:0.5rem;">
+    <a href="https://github.com/obra/superpowers" target="_blank">GitHub</a>
+  </p>
+  <p style="margin-top:1rem;font-size:0.75rem;color:#4a5568;">本文档基于仓库源码自动分析生成</p>
+</footer>
+
+<!-- Skill Detail Modal -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal" id="modal-content">
+    <button class="modal-close" onclick="closeModal(event, true)">&times;</button>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+// Skill detail data
+const skillDetails = {
+  brainstorming: {
+    title: "Brainstorming 头脑风暴",
+    trigger: "功能设计、组件创建、功能修改之前",
+    sections: [
+      { title: "核心流程", content: "<ol><li>探索上下文，理解代码库现状</li><li>提供可视化伴侣（基于本地 Node.js 服务器的浏览器 Mockup/图表）</li><li>逐个提问澄清需求（偏好多选题格式）</li><li>提出 2-3 种实现方案</li><li>分段展示设计</li><li>将设计文档写入 <code>docs/superpowers/specs/</code></li><li>派发子代理做规格自审</li><li>用户审批后过渡到 writing-plans</li></ol>" },
+      { title: "硬性门禁", content: "<p>设计文档未经用户审批，禁止进入实现阶段。</p>" },
+      { title: "支撑文件", content: "<ul><li><code>visual-companion.md</code> — 浏览器端可视化伴侣</li><li><code>spec-document-reviewer-prompt.md</code> — 规格审查子代理提示词</li><li><code>scripts/</code> — server.cjs, start/stop-server.sh, 模板文件</li></ul>" }
+    ]
+  },
+  "writing-plans": {
+    title: "Writing Plans 编写计划",
+    trigger: "有了规格/需求，准备拆解实现步骤时",
+    sections: [
+      { title: "核心流程", content: "<ol><li>检查范围，确认是否需要计划</li><li>定义文件结构</li><li>将工作拆分为小任务（每个 2-5 分钟）</li><li>每个任务强制包含 TDD 步骤</li><li>包含精确文件路径、完整代码块、具体命令</li><li>保存到 <code>docs/superpowers/plans/</code></li><li>自审后提交用户审批</li></ol>" },
+      { title: "严格要求", content: "<p>禁止 TBD、TODO、&quot;待定&quot; 等占位符。每个步骤必须包含实际的代码或命令。</p>" },
+      { title: "支撑文件", content: "<ul><li><code>plan-document-reviewer-prompt.md</code> — 计划审查子代理提示词</li></ul>" }
+    ]
+  },
+  "subagent-driven-dev": {
+    title: "Subagent-Driven Development 子代理驱动开发",
+    trigger: "执行含独立任务的实现计划时",
+    sections: [
+      { title: "核心流程", content: "<ol><li>一次性读取完整计划，提取所有任务</li><li>为每个任务分派实现子代理</li><li>处理子代理状态：DONE / DONE_WITH_CONCERNS / NEEDS_CONTEXT / BLOCKED</li><li>派发规格合规审查子代理</li><li>派发代码质量审查子代理</li><li>标记任务完成</li><li>最终审查后触发分支收尾</li></ol>" },
+      { title: "双阶段审查", content: "<p><strong>第一阶段：</strong>规格合规 — 实现是否符合计划要求？（明确不信任实现者的自我报告）<br><strong>第二阶段：</strong>代码质量 — 代码是否符合工程标准？</p>" },
+      { title: "智能模型选择", content: "<p>机械性任务 → 廉价模型<br>集成任务 → 标准模型<br>架构/审查 → 最强模型</p>" },
+      { title: "支撑文件", content: "<ul><li><code>implementer-prompt.md</code> — 实现子代理模板</li><li><code>spec-reviewer-prompt.md</code> — 规格合规审查模板</li><li><code>code-quality-reviewer-prompt.md</code> — 代码质量审查模板</li></ul>" }
+    ]
+  },
+  "executing-plans": {
+    title: "Executing Plans 执行计划",
+    trigger: "在独立会话中执行已编写的实现计划时",
+    sections: [
+      { title: "核心流程", content: "<ol><li>加载并审阅完整计划</li><li>逐步执行每个任务</li><li>在检查点验证进度</li><li>完成后触发分支收尾</li></ol>" },
+      { title: "备注", content: "<p>对于支持子代理的平台，推荐使用 subagent-driven-development 以获得更好的并行能力和审查质量。</p>" }
+    ]
+  },
+  tdd: {
+    title: "Test-Driven Development 测试驱动开发",
+    trigger: "在编写任何生产代码之前",
+    sections: [
+      { title: "铁律", content: "<p style='color:var(--accent4);font-weight:bold;font-size:1.1rem;'>没有失败测试就不写生产代码</p>" },
+      { title: "TDD 循环", content: "<ol><li><strong style='color:#ef4444;'>RED</strong> — 编写失败测试</li><li><strong>验证 RED</strong> — 确认测试确实失败</li><li><strong style='color:#22c55e;'>GREEN</strong> — 编写最小通过代码</li><li><strong>验证 GREEN</strong> — 确认测试通过</li><li><strong style='color:#3b82f6;'>REFACTOR</strong> — 重构（保持测试通过）</li><li>重复</li></ol>" },
+      { title: "合理化思维检测", content: "<p>内置大量 &quot;合理化借口&quot; 检测表，识别并拦截代理试图跳过测试的常见理由，如 &quot;这太简单不需要测试&quot;、&quot;先写代码再补测试&quot;、&quot;这是重构不需要新测试&quot; 等。</p>" },
+      { title: "支撑文件", content: "<ul><li><code>testing-anti-patterns.md</code> — 5 种测试反模式详解</li></ul>" }
+    ]
+  },
+  debugging: {
+    title: "Systematic Debugging 系统性调试",
+    trigger: "任何 bug、测试失败或意外行为",
+    sections: [
+      { title: "铁律", content: "<p style='color:var(--accent4);font-weight:bold;font-size:1.1rem;'>不做根因分析就不修复</p>" },
+      { title: "四阶段方法论", content: "<ol><li><strong>根因调查</strong> — 沿调用栈向后追踪</li><li><strong>模式分析</strong> — 寻找相似模式和共性</li><li><strong>假设检验</strong> — 形成假设并设计验证</li><li><strong>实施修复</strong> — 基于确认的根因修复</li></ol>" },
+      { title: "3+ 修复规则", content: "<p>如果已经尝试 3 次以上修复仍然失败，必须停下来质疑整体架构，而不是继续微调。</p>" },
+      { title: "支撑文件", content: "<ul><li><code>root-cause-tracing.md</code> — 沿调用栈回溯方法</li><li><code>defense-in-depth.md</code> — 4 层验证（入口、业务逻辑、环境守卫、调试插桩）</li><li><code>condition-based-waiting.md</code> — 条件轮询替代固定超时</li><li><code>find-polluter.sh</code> — 二分法定位测试污染</li></ul>" }
+    ]
+  },
+  verification: {
+    title: "Verification Before Completion 完成前验证",
+    trigger: "声称工作完成、修复成功、测试通过之前",
+    sections: [
+      { title: "铁律", content: "<p style='color:var(--accent4);font-weight:bold;font-size:1.1rem;'>没有新鲜验证证据就不声称完成</p>" },
+      { title: "验证流程", content: "<ol><li>确定验证命令</li><li>运行验证命令</li><li>完整读取输出</li><li>核实声明与证据一致</li><li>只有在证据支持时才做出声明</li></ol>" }
+    ]
+  },
+  "request-review": {
+    title: "Requesting Code Review 请求代码审查",
+    trigger: "完成任务、实现功能、合并前",
+    sections: [
+      { title: "核心流程", content: "<ol><li>获取 Git SHA（基础和当前）</li><li>使用模板分派代码审查子代理</li><li>审查员独立检查实现与计划的对齐度</li><li>根据反馈采取行动</li></ol>" },
+      { title: "问题分级", content: "<p><strong>Critical</strong> — 必须修复<br><strong>Important</strong> — 应该修复<br><strong>Suggestions</strong> — 可以考虑</p>" },
+      { title: "支撑文件", content: "<ul><li><code>code-reviewer.md</code> — 审查模板（含占位符：实现内容、计划要求、SHA 范围、描述）</li></ul>" }
+    ]
+  },
+  "receive-review": {
+    title: "Receiving Code Review 接收代码审查",
+    trigger: "收到反馈，尤其是不确定或有疑问时",
+    sections: [
+      { title: "核心规则", content: "<ul><li>禁止表演性附和（&quot;说得太对了！&quot;、&quot;感谢指出！&quot;）</li><li>先验证再实施</li><li>审查员错误时用技术论据反驳</li><li>对 &quot;专业&quot; 建议执行 YAGNI 检查</li></ul>" },
+      { title: "禁止用语", content: "<p style='color:var(--accent4);'>&quot;Great point!&quot; / &quot;You're absolutely right!&quot; / &quot;Thanks for catching that!&quot; / 任何感谢表达</p>" }
+    ]
+  },
+  "parallel-agents": {
+    title: "Dispatching Parallel Agents 并行代理调度",
+    trigger: "2+ 个无共享状态的独立任务",
+    sections: [
+      { title: "核心流程", content: "<ol><li>识别独立领域（无共享状态）</li><li>创建聚焦的代理任务描述</li><li>并行分派执行</li><li>审查和集成结果</li></ol>" },
+      { title: "典型场景", content: "<p>多个不相关的测试失败 / 独立子系统的问题修复 / 并行的文件处理任务</p>" }
+    ]
+  },
+  worktrees: {
+    title: "Using Git Worktrees 使用 Git 工作树",
+    trigger: "开始需要隔离的功能开发、执行计划前",
+    sections: [
+      { title: "核心流程", content: "<ol><li>检查现有目录规范（<code>.worktrees/</code> 优先于 <code>worktrees/</code>）</li><li>检查 CLAUDE.md 中的项目规范</li><li>询问用户确认</li><li>确保目录被 gitignore</li><li>创建 worktree</li><li>运行项目初始化命令</li><li>验证测试基线（干净状态）</li></ol>" }
+    ]
+  },
+  "finish-branch": {
+    title: "Finishing Dev Branch 开发分支收尾",
+    trigger: "实现完成且所有测试通过",
+    sections: [
+      { title: "核心流程", content: "<ol><li>验证所有测试通过</li><li>确定基础分支</li><li>精确提供 4 个选项（不多不少）</li><li>执行用户选择</li><li>清理 worktree</li></ol>" },
+      { title: "四个选项", content: "<ul><li>本地合并到基础分支</li><li>创建 Pull Request</li><li>保持当前状态不变</li><li>丢弃分支和更改</li></ul>" }
+    ]
+  },
+  "using-superpowers": {
+    title: "Using Superpowers 技能调度引导",
+    trigger: "每次会话开始（通过 hook 自动注入）",
+    sections: [
+      { title: "核心规则", content: "<p>即使只有 <strong>1%</strong> 的适用概率也要调用相关技能。</p><p>优先级：用户指令 > Superpowers 技能 > 默认系统提示</p>" },
+      { title: "红旗检测", content: "<p>内置合理化思维检测表，识别代理试图跳过技能调用的常见理由。</p>" },
+      { title: "平台适配", content: "<ul><li><code>references/codex-tools.md</code> — Codex 工具映射</li><li><code>references/copilot-tools.md</code> — Copilot CLI 工具映射</li><li><code>references/gemini-tools.md</code> — Gemini CLI 工具映射</li></ul>" }
+    ]
+  },
+  "writing-skills": {
+    title: "Writing Skills 技能编写",
+    trigger: "创建、编辑或验证技能时",
+    sections: [
+      { title: "核心理念", content: "<p>编写技能就是对流程文档应用 TDD。</p>" },
+      { title: "TDD 流程", content: "<ol><li><strong>RED</strong> — 基线测试（无技能时代理的行为）</li><li><strong>GREEN</strong> — 编写最小技能使代理行为改变</li><li><strong>REFACTOR</strong> — 堵漏洞，加强边界情况处理</li></ol>" },
+      { title: "技能类型", content: "<ul><li><strong>Technique</strong> — 技术/方法论</li><li><strong>Pattern</strong> — 模式/范式</li><li><strong>Reference</strong> — 参考资料</li></ul>" },
+      { title: "CSO (Claude Search Optimization)", content: "<p>丰富的描述以提高发现率 / 关键词覆盖 / 描述性命名 / Token 效率优化</p>" },
+      { title: "支撑文件", content: "<ul><li><code>anthropic-best-practices.md</code> — Anthropic 官方技能编写指南</li><li><code>testing-skills-with-subagents.md</code> — 完整测试方法论</li><li><code>persuasion-principles.md</code> — 说服力研究，用于强化技能</li><li><code>graphviz-conventions.dot</code> — 流程图样式规范</li><li><code>render-graphs.js</code> — 渲染技能流程图为 SVG</li></ul>" }
+    ]
+  }
+};
+
+// Scroll nav visibility
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('visible', window.scrollY > window.innerHeight * 0.7);
+});
+
+// Fade-in animation
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+// Skill filter tabs
+document.querySelectorAll('.skill-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.skill-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const filter = tab.dataset.filter;
+    document.querySelectorAll('#skill-cards .card').forEach(card => {
+      card.classList.toggle('hidden', filter !== 'all' && card.dataset.category !== filter);
+    });
+  });
+});
+
+// Modal
+function openModal(el) {
+  const key = el.dataset.skill;
+  const data = skillDetails[key];
+  if (!data) return;
+
+  let html = `<h2>${data.title}</h2>`;
+  html += `<div class="modal-trigger">触发条件：${data.trigger}</div>`;
+  data.sections.forEach(s => {
+    html += `<div class="modal-section"><h4>${s.title}</h4>${s.content}</div>`;
+  });
+
+  document.getElementById('modal-body').innerHTML = html;
+  document.getElementById('modal-overlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(e, force) {
+  if (force || e.target === document.getElementById('modal-overlay')) {
+    document.getElementById('modal-overlay').classList.remove('active');
+    document.body.style.overflow = '';
+  }
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal(null, true);
+});
+</script>
+
+</body>
+</html>
