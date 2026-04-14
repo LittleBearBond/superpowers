@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Superpowers for Claude Code — 完整使用指南</title>
+<style>
+:root{--bg:#0a0c15;--bg2:#111425;--bg3:#181c32;--bg4:#1f2440;--border:#282d4a;--text:#e4e8f7;--dim:#7b83a6;--green:#34d399;--cyan:#22d3ee;--purple:#a78bfa;--pink:#f472b6;--amber:#fbbf24;--red:#f87171;--blue:#60a5fa;--radius:14px;--mono:'SF Mono','Fira Code','JetBrains Mono',Consolas,monospace}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.75;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--purple);border-radius:3px}
+a{color:var(--cyan);text-decoration:none;transition:color .2s}a:hover{color:var(--green)}
+code{font-family:var(--mono);font-size:.84em;background:rgba(34,211,238,.06);color:var(--cyan);padding:2px 7px;border-radius:5px}
+pre{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1.1rem 1.4rem;overflow-x:auto;font-family:var(--mono);font-size:.84rem;line-height:1.7;color:var(--dim);margin:.8rem 0}
+pre code{background:none;padding:0;color:inherit}
+
+/* nav */
+.nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(10,12,21,.88);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);transform:translateY(-100%);transition:transform .35s}
+.nav.show{transform:translateY(0)}
+.nav-inner{max-width:1100px;margin:0 auto;padding:0 1.5rem;height:54px;display:flex;align-items:center;gap:1.4rem;overflow-x:auto}
+.nav-logo{font-weight:800;font-size:.95rem;background:linear-gradient(135deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;white-space:nowrap;flex-shrink:0}
+.nav a{color:var(--dim);font-size:.8rem;white-space:nowrap;transition:color .2s}.nav a:hover{color:var(--cyan)}
+
+/* hero */
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 40%,rgba(167,139,250,.07),transparent 70%),radial-gradient(ellipse 60% 50% at 30% 60%,rgba(34,211,238,.05),transparent 60%)}
+.hero-inner{position:relative;z-index:1;max-width:800px;padding:2rem}
+.hero .badge{display:inline-block;padding:5px 18px;border:1px solid rgba(34,211,238,.25);border-radius:24px;color:var(--cyan);font-size:.82rem;font-family:var(--mono);margin-bottom:1.5rem;background:rgba(34,211,238,.04)}
+.hero h1{font-size:clamp(2.6rem,7vw,4.8rem);font-weight:800;letter-spacing:-2px;background:linear-gradient(135deg,var(--cyan) 0%,var(--purple) 50%,var(--pink) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.1;margin-bottom:1rem}
+.hero .sub{font-size:1.1rem;color:var(--dim);max-width:600px;margin:0 auto 2.5rem}
+.hero-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+.btn{padding:10px 26px;border-radius:10px;font-size:.88rem;font-weight:600;cursor:pointer;transition:all .2s;border:none;display:inline-flex;align-items:center;gap:.5rem}
+.btn-p{background:linear-gradient(135deg,var(--cyan),var(--purple));color:#0a0c15}.btn-p:hover{transform:translateY(-1px);box-shadow:0 8px 30px rgba(34,211,238,.2)}
+.btn-g{background:transparent;border:1px solid var(--border);color:var(--text)}.btn-g:hover{border-color:var(--cyan);color:var(--cyan)}
+
+/* sections */
+.sec{max-width:1100px;margin:0 auto;padding:5rem 2rem}
+.div{height:1px;max-width:1100px;margin:0 auto;background:linear-gradient(90deg,transparent,var(--border),transparent)}
+.tag{display:inline-block;padding:4px 14px;border-radius:20px;font-size:.72rem;text-transform:uppercase;letter-spacing:2px;font-weight:700;margin-bottom:1rem}
+.tc{background:rgba(34,211,238,.08);color:var(--cyan);border:1px solid rgba(34,211,238,.18)}
+.tp{background:rgba(167,139,250,.08);color:var(--purple);border:1px solid rgba(167,139,250,.18)}
+.tg{background:rgba(52,211,153,.08);color:var(--green);border:1px solid rgba(52,211,153,.18)}
+.ta{background:rgba(251,191,36,.08);color:var(--amber);border:1px solid rgba(251,191,36,.18)}
+.tk{background:rgba(244,114,182,.08);color:var(--pink);border:1px solid rgba(244,114,182,.18)}
+.tr{background:rgba(248,113,113,.08);color:var(--red);border:1px solid rgba(248,113,113,.18)}
+.tb{background:rgba(96,165,250,.08);color:var(--blue);border:1px solid rgba(96,165,250,.18)}
+.sh{font-size:2rem;font-weight:700;margin-bottom:.4rem}.sp{color:var(--dim);font-size:1rem;max-width:680px}
+
+/* cards */
+.g2{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.2rem}
+.g3{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.1rem}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;transition:all .3s}
+.card:hover{border-color:rgba(34,211,238,.25);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.3)}
+.card h3{font-size:1.02rem;font-weight:600;margin-bottom:.4rem}.card p,.card li{color:var(--dim);font-size:.88rem}
+
+/* phase blocks */
+.phase{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:1.5rem;overflow:hidden}
+.phase-head{padding:1.3rem 1.5rem;display:flex;align-items:center;gap:1rem;cursor:pointer;transition:background .2s}
+.phase-head:hover{background:var(--bg3)}
+.phase-num{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1rem;border:2px solid;flex-shrink:0;background:var(--bg)}
+.phase-head h3{flex:1;font-size:1.05rem;font-weight:600}
+.phase-head .cmd{font-family:var(--mono);font-size:.75rem;padding:3px 10px;border-radius:6px;background:rgba(167,139,250,.08);color:var(--purple);border:1px solid rgba(167,139,250,.15);flex-shrink:0}
+.phase-arrow{color:var(--dim);font-size:1rem;transition:transform .25s;flex-shrink:0}
+.phase.open .phase-arrow{transform:rotate(90deg)}
+.phase-body{display:none;padding:0 1.5rem 1.5rem;border-top:1px solid var(--border)}
+.phase.open .phase-body{display:block;padding-top:1.3rem}
+
+/* sub-sections in phase */
+.sub-title{color:var(--purple);font-size:.78rem;text-transform:uppercase;letter-spacing:1px;margin:1.2rem 0 .5rem;font-weight:600}
+.sub-title:first-child{margin-top:0}
+.iron{margin:.8rem 0;padding:.6rem 1rem;background:rgba(248,113,113,.06);border-left:3px solid var(--red);border-radius:0 6px 6px 0;font-size:.88rem;color:var(--red);font-weight:600}
+.gate{margin:.8rem 0;padding:.6rem 1rem;background:rgba(251,191,36,.06);border-left:3px solid var(--amber);border-radius:0 6px 6px 0;font-size:.88rem;color:var(--amber);font-weight:600}
+.tip{margin:.8rem 0;padding:.6rem 1rem;background:rgba(52,211,153,.06);border-left:3px solid var(--green);border-radius:0 6px 6px 0;font-size:.88rem;color:var(--green)}
+.note{margin:.8rem 0;padding:.6rem 1rem;background:rgba(96,165,250,.06);border-left:3px solid var(--blue);border-radius:0 6px 6px 0;font-size:.88rem;color:var(--blue)}
+.warn{margin:.8rem 0;padding:.6rem 1rem;background:rgba(244,114,182,.06);border-left:3px solid var(--pink);border-radius:0 6px 6px 0;font-size:.88rem;color:var(--pink)}
+
+.step-list{counter-reset:step;list-style:none;padding:0}
+.step-list li{counter-increment:step;padding:.5rem 0 .5rem 2.2rem;position:relative;color:var(--dim);font-size:.9rem;border-left:2px solid var(--border);margin-left:.8rem}
+.step-list li::before{content:counter(step);position:absolute;left:-14px;top:.45rem;width:26px;height:26px;border-radius:50%;background:var(--bg3);border:2px solid var(--purple);color:var(--purple);font-size:.72rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+.step-list li:last-child{border-left-color:transparent}
+.step-list li strong{color:var(--text)}
+
+/* diagram */
+.diagram{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;overflow-x:auto;margin:1rem 0}
+.diagram-flow{display:flex;align-items:stretch;gap:0;min-width:max-content}
+.d-box{text-align:center;padding:.8rem;min-width:140px;max-width:160px}
+.d-box .d-icon{font-size:1.6rem;margin-bottom:.3rem}
+.d-box .d-name{font-size:.82rem;font-weight:600;margin-bottom:.2rem}
+.d-box .d-desc{font-size:.7rem;color:var(--dim);line-height:1.3}
+.d-arr{display:flex;align-items:center;font-size:1.2rem;color:var(--purple);padding:0 .2rem;flex-shrink:0}
+
+/* detail table */
+.dtbl{width:100%;border-collapse:collapse;margin:.8rem 0}
+.dtbl th,.dtbl td{padding:.65rem 1rem;text-align:left;border-bottom:1px solid var(--border);font-size:.86rem}
+.dtbl th{color:var(--cyan);font-size:.72rem;text-transform:uppercase;letter-spacing:1.5px;font-weight:600;background:var(--bg2)}
+.dtbl td{color:var(--dim)}.dtbl tr:hover td{background:var(--bg2);color:var(--text)}
+
+/* accordion */
+.acc{border:1px solid var(--border);border-radius:var(--radius);margin-bottom:.7rem;overflow:hidden;background:var(--bg2)}
+.acc-q{padding:.9rem 1.3rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-weight:600;font-size:.92rem;transition:background .2s}
+.acc-q:hover{background:var(--bg3)}
+.acc-q .arr{transition:transform .25s;color:var(--dim)}
+.acc.open .acc-q .arr{transform:rotate(90deg)}
+.acc-a{display:none;padding:0 1.3rem 1.1rem;color:var(--dim);font-size:.88rem}
+.acc.open .acc-a{display:block}
+
+/* footer */
+.footer{text-align:center;padding:3rem 2rem;border-top:1px solid var(--border);color:var(--dim);font-size:.85rem}
+@media(max-width:768px){.g2,.g3{grid-template-columns:1fr}.sec{padding:3rem 1.2rem}.phase-head .cmd{display:none}}
+.ani{opacity:0;transform:translateY(24px);transition:all .55s ease}.ani.v{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav class="nav" id="nav">
+<div class="nav-inner">
+  <span class="nav-logo">Superpowers for Claude Code</span>
+  <a href="#install">安装</a>
+  <a href="#how">运行机制</a>
+  <a href="#workflow">完整工作流</a>
+  <a href="#phase1">头脑风暴</a>
+  <a href="#phase2">工作树</a>
+  <a href="#phase3">编写计划</a>
+  <a href="#phase4">子代理开发</a>
+  <a href="#phase5">TDD</a>
+  <a href="#phase6">调试</a>
+  <a href="#phase7">验证</a>
+  <a href="#phase8">代码审查</a>
+  <a href="#phase9">分支收尾</a>
+  <a href="#skills">技能总表</a>
+  <a href="#faq">FAQ</a>
+</div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+<div class="hero-inner">
+  <div class="badge">v5.0.7 &middot; Claude Code 专版指南</div>
+  <h1>Superpowers<br>使用指南</h1>
+  <p class="sub">面向 Claude Code 用户的完整端到端工作流指南 &mdash; 从安装到每个阶段的详细操作，让你真正理解 AI 代理如何被驯化为专业工程师</p>
+  <div class="hero-btns">
+    <a class="btn btn-p" href="#install">开始安装</a>
+    <a class="btn btn-g" href="#workflow">工作流全景</a>
+  </div>
+</div>
+</section>
+
+<!-- ====== INSTALL ====== -->
+<div class="div"></div>
+<section class="sec ani" id="install">
+  <div class="tag tc">Installation</div>
+  <h2 class="sh">在 Claude Code 中安装</h2>
+  <p class="sp" style="margin-bottom:2rem">两行命令即可完成，安装后每次新会话自动生效</p>
+
+  <div class="g2">
+    <div class="card">
+      <h3 style="color:var(--green)">方式一：官方市场（推荐）</h3>
+      <p>在 Claude Code 中直接输入：</p>
+      <pre><code>/plugin install superpowers@claude-plugins-official</code></pre>
+      <p style="margin-top:.5rem">这是最简单的安装方式，一条命令搞定。</p>
+    </div>
+    <div class="card">
+      <h3>方式二：通过市场仓库</h3>
+      <p>先注册自定义市场，再安装：</p>
+      <pre><code>/plugin marketplace add obra/superpowers-marketplace
+/plugin install superpowers@superpowers-marketplace</code></pre>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:1.2rem">
+    <h3>常用管理命令</h3>
+    <div style="overflow-x:auto">
+      <table class="dtbl">
+        <tr><td><code>/plugin list</code></td><td>查看已安装的插件</td></tr>
+        <tr><td><code>/plugin update superpowers</code></td><td>更新到最新版本</td></tr>
+        <tr><td><code>/plugin uninstall superpowers</code></td><td>卸载插件</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="tip">
+    <strong>验证安装：</strong>启动一个新会话（必须是新会话），输入 "帮我开发一个新功能"。如果 Claude 回复中提到使用了 brainstorming 技能，说明安装成功。
+  </div>
+</section>
+
+<!-- ====== HOW IT WORKS ====== -->
+<div class="div"></div>
+<section class="sec ani" id="how">
+  <div class="tag tp">How It Works</div>
+  <h2 class="sh">运行机制</h2>
+  <p class="sp" style="margin-bottom:2rem">理解 Superpowers 如何在每次会话中接管 Claude 的行为</p>
+
+  <div class="card" style="margin-bottom:1.2rem">
+    <h3>第一步：会话启动注入</h3>
+    <p>每次新会话启动时（包括 <code>/clear</code> 和 <code>/compact</code>），<code>hooks.json</code> 触发 <code>session-start</code> 脚本。该脚本读取 <code>using-superpowers/SKILL.md</code> 的完整内容，用 <code>&lt;EXTREMELY_IMPORTANT&gt;</code> 标签包裹后注入 Claude 的上下文。</p>
+    <pre><code>// hooks.json 配置
+{
+  "hooks": {
+    "SessionStart": [{
+      "matcher": "startup|clear|compact",
+      "hooks": [{
+        "type": "command",
+        "command": "\"${CLAUDE_PLUGIN_ROOT}/hooks/run-hook.cmd\" session-start",
+        "async": false  // 同步执行，确保注入完成后才开始对话
+      }]
+    }]
+  }
+}</code></pre>
+  </div>
+
+  <div class="card" style="margin-bottom:1.2rem">
+    <h3>第二步：技能强制检查</h3>
+    <p>注入的 <code>using-superpowers</code> 技能建立了核心规则：</p>
+    <div class="iron">在任何回复或操作之前，必须检查并调用相关技能。即使只有 1% 的适用概率也必须调用。这是非可选的、不可协商的。</div>
+    <p style="margin-top:.8rem">Claude 在 Claude Code 中使用 <code>Skill</code> 工具调用技能。调用后技能内容被加载并展示给 Claude，Claude 随后按技能要求执行。</p>
+  </div>
+
+  <div class="card" style="margin-bottom:1.2rem">
+    <h3>第三步：指令优先级</h3>
+    <div style="overflow-x:auto">
+      <table class="dtbl">
+        <thead><tr><th>优先级</th><th>来源</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td style="color:var(--red);font-weight:700">最高</td><td>用户直接指令</td><td>CLAUDE.md 配置、对话中的直接要求</td></tr>
+          <tr><td style="color:var(--amber);font-weight:700">中</td><td>Superpowers 技能</td><td>覆盖 Claude 的默认行为</td></tr>
+          <tr><td style="color:var(--dim);font-weight:700">最低</td><td>默认系统提示</td><td>Claude 的出厂行为</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-top:.5rem;font-size:.85rem;color:var(--dim)">这意味着你可以通过直接指令覆盖任何技能行为（如 "不需要头脑风暴，直接做"），但 Superpowers 的价值正在于这些流程。</p>
+  </div>
+
+  <div class="card">
+    <h3>红旗检测表</h3>
+    <p>如果 Claude 产生以下想法，<code>using-superpowers</code> 要求它立即停下来检查技能：</p>
+    <div style="overflow-x:auto;margin-top:.6rem">
+      <table class="dtbl">
+        <thead><tr><th>合理化想法</th><th>正确做法</th></tr></thead>
+        <tbody>
+          <tr><td>"这只是个简单问题"</td><td>问题也是任务，检查技能</td></tr>
+          <tr><td>"我需要先了解更多上下文"</td><td>技能检查在澄清提问之前</td></tr>
+          <tr><td>"先让我看看代码"</td><td>技能告诉你<em>如何</em>探索</td></tr>
+          <tr><td>"这不需要正式的技能"</td><td>如果技能存在，就用</td></tr>
+          <tr><td>"技能太小题大做了"</td><td>简单的事情会变复杂</td></tr>
+          <tr><td>"我先做这一件事"</td><td>做任何事之前先检查</td></tr>
+          <tr><td>"我记得这个技能的内容"</td><td>技能会迭代更新，读当前版本</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ====== WORKFLOW OVERVIEW ====== -->
+<div class="div"></div>
+<section class="sec ani" id="workflow">
+  <div class="tag ta">End-to-End Workflow</div>
+  <h2 class="sh">完整工作流全景</h2>
+  <p class="sp" style="margin-bottom:1.5rem">从 "我想做 X" 到代码合并，每个阶段都有对应的技能自动接管</p>
+
+  <div class="diagram">
+    <div class="diagram-flow">
+      <div class="d-box"><div class="d-icon">&#128161;</div><div class="d-name">头脑风暴</div><div class="d-desc">澄清需求<br>探索方案<br>编写设计文档</div></div>
+      <div class="d-arr">&#10132;</div>
+      <div class="d-box"><div class="d-icon">&#127795;</div><div class="d-name">创建工作树</div><div class="d-desc">隔离分支<br>项目初始化<br>验证基线</div></div>
+      <div class="d-arr">&#10132;</div>
+      <div class="d-box"><div class="d-icon">&#128221;</div><div class="d-name">编写计划</div><div class="d-desc">拆分任务<br>每步含代码<br>TDD 步骤</div></div>
+      <div class="d-arr">&#10132;</div>
+      <div class="d-box"><div class="d-icon">&#129302;</div><div class="d-name">子代理开发</div><div class="d-desc">分派子代理<br>双阶段审查<br>任务循环</div></div>
+      <div class="d-arr">&#10132;</div>
+      <div class="d-box"><div class="d-icon">&#128308;</div><div class="d-name">TDD 循环</div><div class="d-desc">RED 失败测试<br>GREEN 最小代码<br>REFACTOR</div></div>
+      <div class="d-arr">&#10132;</div>
+      <div class="d-box"><div class="d-icon">&#9989;</div><div class="d-name">验证 & 审查</div><div class="d-desc">运行验证<br>规格合规<br>代码质量</div></div>
+      <div class="d-arr">&#10132;</div>
+      <div class="d-box"><div class="d-icon">&#127937;</div><div class="d-name">分支收尾</div><div class="d-desc">测试通过<br>四选一操作<br>清理工作树</div></div>
+    </div>
+  </div>
+
+  <div class="note">
+    <strong>技能链式触发：</strong>brainstorming 完成后自动调用 writing-plans → writing-plans 完成后让用户选择 subagent-driven-development 或 executing-plans → 开发过程中自动调用 TDD、debugging、verification → 全部完成后自动调用 finishing-a-development-branch。你不需要手动触发每个技能。
+  </div>
+</section>
+
+<!-- ====== PHASE 1: BRAINSTORMING ====== -->
+<div class="div"></div>
+<section class="sec ani" id="phase1">
+  <div class="tag ta">Phase 1</div>
+  <h2 class="sh">头脑风暴 Brainstorming</h2>
+  <p class="sp" style="margin-bottom:1.5rem">整个工作流的起点。每当你要 "构建"、"创建"、"修改" 任何东西时自动激活</p>
+
+  <div class="phase open">
+    <div class="phase-head" onclick="this.parentElement.classList.toggle('open')">
+      <div class="phase-num" style="border-color:var(--amber);color:var(--amber)">1</div>
+      <h3>你会经历的 9 个步骤</h3>
+      <span class="cmd">superpowers:brainstorming</span>
+      <span class="phase-arrow">&#9654;</span>
+    </div>
+    <div class="phase-body">
+      <div class="gate">硬性门禁：设计文档未经你的审批，Claude 禁止写任何代码、搭建任何脚手架、执行任何实现操作。无论项目多 "简单" 都必须经过此流程。</div>
+
+      <div class="sub-title">步骤 1 — 探索项目上下文</div>
+      <p>Claude 会先查看你的项目文件、文档、最近的 git 提交，了解项目现状。</p>
+
+      <div class="sub-title">步骤 2 — 提供可视化伴侣（可选）</div>
+      <p>如果你要做的事涉及 UI、图表、布局等视觉内容，Claude 会<strong>单独发一条消息</strong>询问是否启动浏览器端的可视化工具。这条消息不会与其他内容混合。</p>
+      <div class="tip">可视化伴侣是一个本地 Node.js 服务器，会在浏览器中展示 Mockup、线框图、方案对比。不涉及视觉的项目会跳过此步。</div>
+
+      <div class="sub-title">步骤 3 — 逐个提问澄清需求</div>
+      <p>Claude 会<strong>每次只问一个问题</strong>，偏好选择题格式。重点了解：</p>
+      <ul style="padding-left:1.5rem;color:var(--dim);font-size:.88rem">
+        <li>你要做什么、为什么</li>
+        <li>约束条件（技术栈、性能要求、兼容性）</li>
+        <li>成功标准（怎样算 "做好了"）</li>
+      </ul>
+      <div class="note">如果项目范围过大（涉及多个独立子系统），Claude 会建议拆分为多个子项目，然后从第一个开始头脑风暴。</div>
+
+      <div class="sub-title">步骤 4 — 提出 2-3 种方案</div>
+      <p>Claude <strong>始终</strong>提出 2-3 种实现方案，每种附带优劣分析和推荐理由。不会只给一个方案。</p>
+
+      <div class="sub-title">步骤 5 — 分段展示设计</div>
+      <p>设计不会一次性丢给你。Claude 会分段展示：架构、组件、数据流、错误处理、测试策略等。每段展示后会问 "这部分看起来对吗？"，你批准后才展示下一段。</p>
+      <p style="font-size:.85rem;color:var(--dim);margin-top:.4rem">段落大小根据复杂度自动调整：简单的几句话，复杂的 200-300 字。</p>
+
+      <div class="sub-title">步骤 6 — 编写设计文档</div>
+      <p>所有设计确认后，Claude 将完整设计保存到：</p>
+      <pre><code>docs/superpowers/specs/YYYY-MM-DD-&lt;topic&gt;-design.md</code></pre>
+      <p>并自动 git commit。你可以在 CLAUDE.md 中自定义保存路径。</p>
+
+      <div class="sub-title">步骤 7 — 规格自审</div>
+      <p>Claude 派发一个子代理审查已写的设计文档，检查四项：</p>
+      <ul style="padding-left:1.5rem;color:var(--dim);font-size:.88rem">
+        <li><strong>占位符扫描</strong> — 有无 TBD、TODO、不完整部分？</li>
+        <li><strong>内部一致性</strong> — 是否有矛盾？</li>
+        <li><strong>范围检查</strong> — 是否聚焦到一个计划能搞定？</li>
+        <li><strong>歧义检查</strong> — 需求是否可能被两种方式解读？</li>
+      </ul>
+
+      <div class="sub-title">步骤 8 — 你审阅设计文档</div>
+      <p>Claude 会说：</p>
+      <pre><code>规格已写入并提交到 &lt;path&gt;。请审阅并告知是否需要修改。</code></pre>
+      <p>等待你的回复。你可以要求修改（回到步骤 5 循环），也可以批准继续。</p>
+
+      <div class="sub-title">步骤 9 — 过渡到编写计划</div>
+      <p>你批准后，Claude 自动调用 <code>superpowers:writing-plans</code> 技能。这是 brainstorming 之后<strong>唯一</strong>的下一步 — 不会跳到实现。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ====== PHASE 2: WORKTREES ====== -->
+<div class="div"></div>
+<section class="sec ani" id="phase2">
+  <div class="tag tg">Phase 2</div>
+  <h2 class="sh">创建工作树 Git Worktrees</h2>
+  <p class="sp" style="margin-bottom:1.5rem">在隔离的分支上工作，不影响主分支</p>
+
+  <div class="phase open">
+    <div class="phase-head" onclick="this.parentElement.classList.toggle('open')">
+      <div class="phase-num" style="border-color:var(--green);color:var(--green)">2</div>
+      <h3>隔离工作空间的创建流程</h3>
+      <span class="cmd">superpowers:using-git-worktrees</span>
+      <span class="phase-arrow">&#9654;</span>
+    </div>
+    <div class="phase-body">
+      <div class="sub-title">目录选择（优先级顺序）</div>
+      <ol class="step-list">
+        <li><strong>检查现有目录</strong> — 项目中已有 <code>.worktrees/</code>（优先）或 <code>worktrees/</code> 目录？</li>
+        <li><strong>检查 CLAUDE.md</strong> — 项目是否配置了 worktree 目录偏好？</li>
+        <li><strong>询问你</strong> — 提供两个选择：<br><code>.worktrees/</code>（项目本地隐藏目录）<br><code>~/.config/superpowers/worktrees/&lt;project&gt;/</code>（全局位置）</li>
+      </ol>
+
+      <div class="sub-title">安全检查</div>
+      <p>如果选择了项目本地目录，Claude 会用 <code>git check-ignore -q</code> 验证目录是否被 gitignore。如果没有，先添加到 <code>.gitignore</code> 并提交。</p>
+
+      <div class="sub-title">创建步骤</div>
+      <ol class="step-list">
+        <li><strong>检测项目名</strong> — <code>basename "$(git rev-parse --show-toplevel)"</code></li>
+        <li><strong>创建 worktree</strong> — <code>git worktree add "$path" -b "$BRANCH_NAME"</code></li>
+        <li><strong>自动项目初始化</strong> — 检测到 package.json → <code>npm install</code>，Cargo.toml → <code>cargo build</code>，requirements.txt → <code>pip install</code> 等</li>
+        <li><strong>验证测试基线</strong> — 运行测试套件，确保在干净状态下全部通过</li>
+        <li><strong>报告位置</strong> — 告知工作树路径和测试结果</li>
+      </ol>
+
+      <div class="warn">如果基线测试失败，Claude 会报告失败详情并询问是否继续还是先调查问题。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== PHASE 3: WRITING PLANS ====== -->
+<div class="div"></div>
+<section class="sec ani" id="phase3">
+  <div class="tag tp">Phase 3</div>
+  <h2 class="sh">编写实现计划 Writing Plans</h2>
+  <p class="sp" style="margin-bottom:1.5rem">将设计文档拆解为可由子代理独立执行的小任务</p>
+
+  <div class="phase open">
+    <div class="phase-head" onclick="this.parentElement.classList.toggle('open')">
+      <div class="phase-num" style="border-color:var(--purple);color:var(--purple)">3</div>
+      <h3>计划编写规范</h3>
+      <span class="cmd">superpowers:writing-plans</span>
+      <span class="phase-arrow">&#9654;</span>
+    </div>
+    <div class="phase-body">
+      <div class="sub-title">编写原则</div>
+      <p>计划的假设是：<strong>执行者对代码库零上下文且品味存疑</strong>。所以每个任务必须包含一切所需信息。</p>
+
+      <div class="sub-title">任务粒度</div>
+      <p>每个任务控制在 <strong>2-5 分钟</strong>。以下每一项都是<em>独立的步骤</em>：</p>
+      <ul style="padding-left:1.5rem;color:var(--dim);font-size:.88rem">
+        <li>"编写失败测试" — 一个步骤</li>
+        <li>"运行测试确认失败" — 一个步骤</li>
+        <li>"编写最小通过代码" — 一个步骤</li>
+        <li>"运行测试确认通过" — 一个步骤</li>
+        <li>"提交" — 一个步骤</li>
+      </ul>
+
+      <div class="sub-title">任务结构模板</div>
+      <pre><code>### Task N: [组件名称]
+
+**Files:**
+- Create: `exact/path/to/file.py`
+- Modify: `exact/path/to/existing.py:123-145`
+- Test: `tests/exact/path/to/test.py`
+
+- [ ] **Step 1: 编写失败测试**
+```python
+# 实际的测试代码，不是占位符
+def test_feature_does_x():
+    result = feature(input)
+    assert result == expected
+```
+
+- [ ] **Step 2: 运行测试确认失败**
+Run: `pytest tests/path/test.py::test_name -v`
+Expected: FAIL with "function not defined"
+
+- [ ] **Step 3: 编写最小实现**
+```python
+# 实际的实现代码
+def feature(input):
+    return expected
+```
+
+- [ ] **Step 4: 运行测试确认通过**
+Run: `pytest tests/path/test.py::test_name -v`
+Expected: PASS
+
+- [ ] **Step 5: 提交**
+```bash
+git add tests/path/test.py src/path/file.py
+git commit -m "feat: add specific feature"
+```</code></pre>
+
+      <div class="iron">以下内容出现在计划中即为失败：TBD、TODO、"待定"、"添加适当的错误处理"、"编写上述代码的测试"（不含实际测试代码）、"类似 Task N"（必须重复代码）、没有代码块的代码步骤。</div>
+
+      <div class="sub-title">保存位置</div>
+      <pre><code>docs/superpowers/plans/YYYY-MM-DD-&lt;feature-name&gt;.md</code></pre>
+
+      <div class="sub-title">计划自审（3 项检查）</div>
+      <ul style="padding-left:1.5rem;color:var(--dim);font-size:.88rem">
+        <li><strong>规格覆盖</strong> — 逐条对照规格需求，指出哪个任务实现了哪条需求，列出遗漏</li>
+        <li><strong>占位符扫描</strong> — 搜索所有红旗模式</li>
+        <li><strong>类型一致性</strong> — 跨任务检查类型、方法签名、属性名是否匹配</li>
+      </ul>
+
+      <div class="sub-title">执行方式选择</div>
+      <p>计划完成后，Claude 让你选择执行方式：</p>
+      <div class="g2" style="margin-top:.6rem">
+        <div class="card" style="border-color:rgba(52,211,153,.3)">
+          <h3 style="color:var(--green)">子代理驱动（推荐）</h3>
+          <p>为每个任务分派独立子代理，任务间自动审查。快速迭代，适合大多数项目。</p>
+          <p style="margin-top:.4rem"><code>superpowers:subagent-driven-development</code></p>
+        </div>
+        <div class="card">
+          <h3>内联执行</h3>
+          <p>在当前会话中逐步执行，分批处理，每批后等待你确认。</p>
+          <p style="margin-top:.4rem"><code>superpowers:executing-plans</code></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== PHASE 4: SUBAGENT-DRIVEN DEV ====== -->
+<div class="div"></div>
+<section class="sec ani" id="phase4">
+  <div class="tag tk">Phase 4</div>
+  <h2 class="sh">子代理驱动开发</h2>
+  <p class="sp" style="margin-bottom:1.5rem">核心实现引擎 — 为每个任务分派新鲜子代理，双阶段审查确保质量</p>
+
+  <div class="phase open">
+    <div class="phase-head" onclick="this.parentElement.classList.toggle('open')">
+      <div class="phase-num" style="border-color:var(--pink);color:var(--pink)">4</div>
+      <h3>子代理任务循环详解</h3>
+      <span class="cmd">superpowers:subagent-driven-development</span>
+      <span class="phase-arrow">&#9654;</span>
+    </div>
+    <div class="phase-body">
+
+      <div class="sub-title">整体流程</div>
+      <ol class="step-list">
+        <li><strong>读取计划</strong> — 一次性读取完整计划，提取所有任务的完整文本，创建 TodoWrite 跟踪</li>
+        <li><strong>逐任务循环</strong> — 对每个任务执行下面的 "单任务流程"</li>
+        <li><strong>全局审查</strong> — 所有任务完成后，派发最终代码审查子代理审查整体实现</li>
+        <li><strong>分支收尾</strong> — 自动调用 <code>superpowers:finishing-a-development-branch</code></li>
+      </ol>
+
+      <div class="sub-title">单任务流程（每个任务重复）</div>
+      <div class="diagram">
+        <div class="diagram-flow">
+          <div class="d-box"><div class="d-icon">&#129302;</div><div class="d-name">分派实现者</div><div class="d-desc">新鲜子代理<br>完整任务文本<br>上下文说明</div></div>
+          <div class="d-arr">&#10132;</div>
+          <div class="d-box"><div class="d-icon">&#128295;</div><div class="d-name">实现 + 测试</div><div class="d-desc">TDD 循环<br>自审<br>报告状态</div></div>
+          <div class="d-arr">&#10132;</div>
+          <div class="d-box"><div class="d-icon">&#128203;</div><div class="d-name">规格合规审查</div><div class="d-desc">独立子代理<br>不信任报告<br>读实际代码</div></div>
+          <div class="d-arr">&#10132;</div>
+          <div class="d-box"><div class="d-icon">&#128269;</div><div class="d-name">代码质量审查</div><div class="d-desc">独立子代理<br>质量/架构<br>测试覆盖</div></div>
+          <div class="d-arr">&#10132;</div>
+          <div class="d-box"><div class="d-icon">&#9989;</div><div class="d-name">标记完成</div><div class="d-desc">更新 TodoWrite<br>进入下一任务</div></div>
+        </div>
+      </div>
+
+      <div class="sub-title">实现者子代理</div>
+      <p>使用 Claude Code 的 <code>Task</code> 工具（即 Agent 工具）分派。Claude 将任务的<strong>完整文本</strong>粘贴到提示中（而不是让子代理自己读取计划文件）。子代理需要：</p>
+      <ul style="padding-left:1.5rem;color:var(--dim);font-size:.88rem">
+        <li>按任务规格实现功能</li>
+        <li>遵循 TDD 循环编写测试</li>
+        <li>验证实现可用</li>
+        <li>提交代码</li>
+        <li>自审（完整性、质量、纪律、测试）</li>
+        <li>报告状态：<strong>DONE</strong> / <strong>DONE_WITH_CONCERNS</strong> / <strong>NEEDS_CONTEXT</strong> / <strong>BLOCKED</strong></li>
+      </ul>
+      <div class="tip">子代理被鼓励在不确定时<strong>提问而不是猜测</strong>。如果遇到架构决策、超出范围的重构、或无法理解的代码，它应该报告 BLOCKED 或 NEEDS_CONTEXT。</div>
+
+      <div class="sub-title">实现者状态处理</div>
+      <div style="overflow-x:auto">
+        <table class="dtbl">
+          <thead><tr><th>状态</th><th>含义</th><th>Claude 的处理</th></tr></thead>
+          <tbody>
+            <tr><td style="color:var(--green);font-weight:600">DONE</td><td>任务完成</td><td>直接进入规格合规审查</td></tr>
+            <tr><td style="color:var(--amber);font-weight:600">DONE_WITH_CONCERNS</td><td>完成但有顾虑</td><td>读取顾虑内容。正确性/范围问题 → 先处理再审查；观察性备注 → 记录后继续</td></tr>
+            <tr><td style="color:var(--blue);font-weight:600">NEEDS_CONTEXT</td><td>需要更多上下文</td><td>提供缺失的上下文，重新分派</td></tr>
+            <tr><td style="color:var(--red);font-weight:600">BLOCKED</td><td>被阻塞</td><td>评估原因：上下文不足 → 补充上下文；推理能力不足 → 用更强模型；任务太大 → 拆分；计划有误 → 报告给你</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="sub-title">双阶段审查（顺序不可颠倒）</div>
+      <div class="g2" style="margin-top:.5rem">
+        <div class="card">
+          <h3 style="color:var(--amber)">第一阶段：规格合规审查</h3>
+          <p>派发独立审查子代理，核心原则是<strong>不信任实现者的报告</strong>：</p>
+          <ul style="padding-left:1.2rem;margin-top:.5rem">
+            <li>不相信实现者说了什么</li>
+            <li>不相信实现者声称的完整性</li>
+            <li>不相信实现者对需求的解读</li>
+            <li>必须<strong>读实际代码</strong>，逐行与需求对比</li>
+          </ul>
+          <p style="margin-top:.5rem">检查：是否遗漏需求？是否多做了不需要的？是否误解了需求？</p>
+        </div>
+        <div class="card">
+          <h3 style="color:var(--purple)">第二阶段：代码质量审查</h3>
+          <p>只有在规格合规通过后才进行。检查：</p>
+          <ul style="padding-left:1.2rem;margin-top:.5rem">
+            <li>代码质量（关注点分离、错误处理、类型安全、DRY）</li>
+            <li>架构设计（SOLID、可扩展性、安全性）</li>
+            <li>测试质量（测试逻辑而非 mock、边界情况、全部通过）</li>
+            <li>文件职责（每个文件一个职责、接口清晰）</li>
+          </ul>
+          <p style="margin-top:.5rem">问题分级：Critical（必须修复）/ Important（应该修复）/ Minor（建议）</p>
+        </div>
+      </div>
+      <div class="iron">审查发现问题 → 实现者修复 → 审查者重新审查 → 循环直到通过。绝不跳过审查、绝不 "差不多就行"。</div>
+
+      <div class="sub-title">智能模型选择</div>
+      <div style="overflow-x:auto">
+        <table class="dtbl">
+          <thead><tr><th>任务类型</th><th>选择模型</th><th>典型场景</th></tr></thead>
+          <tbody>
+            <tr><td>机械性任务</td><td>廉价/快速模型</td><td>改 1-2 个文件、规格明确的实现</td></tr>
+            <tr><td>集成任务</td><td>标准模型</td><td>跨多文件、需要判断力</td></tr>
+            <tr><td>架构/审查</td><td>最强模型</td><td>设计决策、代码审查</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size:.85rem;color:var(--dim);margin-top:.5rem">典型子代理任务成本：$0.05 - $0.15</p>
+
+      <div class="sub-title">绝对禁止的行为</div>
+      <ul style="padding-left:1.5rem;color:var(--red);font-size:.88rem">
+        <li>在 main/master 上直接实现（未经你同意）</li>
+        <li>跳过任何一阶段的审查</li>
+        <li>带着未修复的问题继续</li>
+        <li>并行分派多个实现子代理（会冲突）</li>
+        <li>让子代理自己读取计划文件（应粘贴完整文本）</li>
+        <li>在规格合规审查之前启动代码质量审查</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ====== PHASE 5: TDD ====== -->
+<div class="div"></div>
+<section class="sec ani" id="phase5">
+  <div class="tag tr">Phase 5</div>
+  <h2 class="sh">测试驱动开发 TDD</h2>
+  <p class="sp" style="margin-bottom:1.5rem">贯穿整个实现过程的铁律 — 没有失败测试就不写生产代码</p>
+
+  <div class="phase open">
+    <div class="phase-head" onclick="this.parentElement.classList.toggle('open')">
+      <div class="phase-num" style="border-color:var(--red);color:var(--red)">5</div>
+      <h3>RED → GREEN → REFACTOR 循环详解</h3>
+      <span class="cmd">superpowers:test-driven-development</span>
+      <span class="phase-arrow">&#9654;</span>
+    </div>
+    <div class="phase-body">
+      <div class="iron">铁律：没有失败测试就不写生产代码。在测试之前就写了代码？删除它。重来。不保留作 "参考"、不 "改编"、不偷看。删除就是删除。</div>
+
+      <div class="sub-title">循环步骤</div>
+      <div class="diagram">
+        <div class="diagram-flow">
+          <div class="d-box" style="border:2px solid var(--red);border-radius:12px;padding:.6rem"><div class="d-icon" style="color:var(--red)">&#128308;</div><div class="d-name" style="color:var(--red)">RED</div><div class="d-desc">写一个会失败的测试<br>测试一个行为<br>清晰的名字</div></div>
+          <div class="d-arr">&#10132;</div>
+          <div class="d-box" style="border:2px solid var(--amber);border-radius:12px;padding:.6rem"><div class="d-icon">&#9888;</div><div class="d-name" style="color:var(--amber)">验证 RED</div><div class="d-desc">运行测试<br>确认它失败<br>失败原因正确</div></div>
+          <div class="d-arr">&#10132;</div>
+          <div class="d-box" style="border:2px solid var(--green);border-radius:12px;padding:.6rem"><div class="d-icon" style="color:var(--green)">&#128994;</div><div class="d-name" style="color:var(--green)">GREEN</div><div class="d-desc">写最小的代码<br>刚好让测试通过<br>不多做</div></div>
+          <div class="d-arr">&#10132;</div>
+          <div class="d-box" style="border:2px solid var(--green);border-radius:12px;padding:.6rem"><div class="d-icon">&#9888;</div><div class="d-name" style="color:var(--green)">验证 GREEN</div><div class="d-desc">运行测试<br>确认通过<br>其他测试也通过</div></div>
+          <div class="d-arr">&#10132;</div>
+          <div class="d-box" style="border:2px solid var(--blue);border-radius:12px;padding:.6rem"><div class="d-icon" style="color:var(--blue)">&#128309;</div><div class="d-name" style="color:var(--blue)">REFACTOR</div><div class="d-desc">清理代码<br>消除重复<br>保持测试绿色</div></div>
+        </div>
+      </div>
+
+      <div class="sub-title">每一步的规则</div>
+      <div style="overflow-x:auto">
+        <table class="dtbl">
+          <thead><tr><th>步骤</th><th>要求</th><th>常见错误</th></tr></thead>
+          <tbody>
+            <tr><td style="color:var(--red);font-weight:600">RED</td><td>一个最小测试，测试一个行为，清晰命名，用真实代码（不是 mock）</td><td>测试名含 "and"（应拆分）、mock 过多</td></tr>
+            <tr><td style="color:var(--amber);font-weight:600">验证 RED</td><td>测试必须失败（不是报错），失败信息符合预期，因为功能缺失而失败</td><td>测试直接通过（测试了已有功能）、语法错报错</td></tr>
+            <tr><td style="color:var(--green);font-weight:600">GREEN</td><td>写能让测试通过的<em>最简单</em>代码，不添加额外功能、不重构、不 "改进"</td><td>过度实现、"顺便" 加功能</td></tr>
+            <tr><td style="color:var(--green);font-weight:600">验证 GREEN</td><td>目标测试通过，所有其他测试也通过，输出干净</td><td>新测试通过但破坏了旧测试</td></tr>
+            <tr><td style="color:var(--blue);font-weight:600">REFACTOR</td><td>只在绿色后重构，消除重复、改善命名、提取帮助函数。不添加行为</td><td>在红色阶段重构、重构时加了新功能</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="sub-title">合理化借口检测</div>
+      <p>以下想法出现时，Claude 被要求立即停下来回到 TDD：</p>
+      <ul style="padding-left:1.5rem;color:var(--dim);font-size:.88rem">
+        <li>"这太简单了不需要测试" → 如果简单，测试写起来也快</li>
+        <li>"我先写代码再补测试" → 先通过的测试证明不了什么</li>
+        <li>"这是重构不需要新测试" → 测试确认重构没破坏行为</li>
+        <li>"TDD 太教条了" → TDD 是务实的（发现 bug、防止回归、记录行为）</li>
+        <li>"手动测试过了" → 手动测试不可重复、没有记录</li>
+      </ul>
+
+      <div class="sub-title">验证清单（8 项）</div>
+      <p>TDD 结束时必须能勾选所有项：</p>
+      <ul style="padding-left:1.5rem;color:var(--dim);font-size:.88rem">
+        <li>每个函数都有测试</li>
+        <li>每个测试在实现前都看它失败过</li>
+        <li>每个测试的失败原因是预期的</li>
+        <li>每次只写了通过测试的最小代码</li>
+        <li>所有测试都通过</li>
+        <li>测试输出干净</li>
+        <li>测试用真实代码（不是 mock）</li>
+        <li>边界情况已覆盖</li>
+      </ul>
+      <p style="font-size:.85rem;color:var(--red);margin-top:.5rem">无法全部勾选？说明跳过了 TDD。重来。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ====== PHASE 6: DEBUGGING ====== -->
+<div class="div"></div>
+<section class="sec ani" id="phase6">
+  <div class="tag ta">Phase 6</div>
+  <h2 class="sh">系统性调试 Debugging</h2>
+  <p class="sp" style="margin-bottom:1.5rem">遇到任何 Bug 或测试失败时自动激活 — 禁止盲目修复</p>
+
+  <div class="phase open">
+    <div class="phase-head" onclick="this.parentElement.classList.toggle('open')">
+      <div class="phase-num" style="border-color:var(--amber);color:var(--amber)">6</div>
+      <h3>四阶段根因分析法</h3>
+      <span class="cmd">superpowers:systematic-debugging</span>
+      <span class="phase-arrow">&#9654;</span>
+    </div>
+    <div class="phase-body">
+      <div class="iron">铁律：不做根因分析就不修复。Phase 1 未完成，不允许提出修复方案。</div>
+
+      <div class="sub-title">Phase 1 — 根因调查</div>
+      <ol class="step-list">
+        <li><strong>仔细阅读错误信息</strong> — 完整阅读堆栈跟踪，不跳过</li>
+        <li><strong>稳定复现</strong> — 确定精确复现步骤，每次都能复现？</li>
+        <li><strong>检查近期变更</strong> — git diff、依赖更新、配置变更、环境差异</li>
+        <li><strong>多组件系统中收集证据</strong> — 在每个组件边界添加诊断，<em>在提出修复之前</em></li>
+        <li><strong>追踪数据流</strong> — 错误的值从哪里来？持续向上追踪直到源头</li>
+      </ol>
+
+      <div class="sub-title">Phase 2 — 模式分析</div>
+      <ol class="step-list">
+        <li><strong>在代码库中找到正常工作的例子</strong></li>
+        <li><strong>与参考实现完整对比</strong>（不是浏览，是完整阅读）</li>
+        <li><strong>列出每一个差异</strong></li>
+        <li><strong>理解依赖关系</strong></li>
+      </ol>
+
+      <div class="sub-title">Phase 3 — 假设检验</div>
+      <ol class="step-list">
+        <li><strong>形成单一假设</strong> — "我认为 X 是因为 Y"</li>
+        <li><strong>最小化测试</strong> — 最小的改动，一次只改一个变量</li>
+        <li><strong>验证后才继续</strong> — 有效 → Phase 4；无效 → 新假设（不堆叠修复）</li>
+        <li><strong>不知道就说不知道</strong></li>
+      </ol>
+
+      <div class="sub-title">Phase 4 — 实施修复</div>
+      <ol class="step-list">
+        <li><strong>创建失败测试</strong>（使用 TDD 技能）</li>
+        <li><strong>实施单一修复</strong> — 一次只改一个地方，不 "顺便" 改进</li>
+        <li><strong>验证修复</strong></li>
+        <li>修复无效且尝试 < 3 次 → 回到 Phase 1</li>
+        <li><strong>3+ 次修复失败 → 必须停下来</strong>质疑架构是否正确</li>
+      </ol>
+
+      <div class="warn"><strong>3+ 修复规则：</strong>如果已经尝试 3 次以上修复仍然失败，必须停下来讨论：模式本身是否正确？是不是因为惯性在坚持错误的方向？应该重构还是继续修补？</div>
+
+      <div class="sub-title">附带工具</div>
+      <ul style="padding-left:1.5rem;color:var(--dim);font-size:.88rem">
+        <li><code>root-cause-tracing.md</code> — 沿调用栈回溯方法</li>
+        <li><code>defense-in-depth.md</code> — 4 层验证（入口、业务逻辑、环境守卫、调试插桩）</li>
+        <li><code>condition-based-waiting.md</code> — 用条件轮询替代固定超时</li>
+        <li><code>find-polluter.sh</code> — 二分法定位哪个测试导致了污染</li>
+      </ul>
+
+      <p style="margin-top:1rem;font-size:.85rem;color:var(--dim)"><strong>效果对比：</strong>系统性调试 15-30 分钟解决，首次修复成功率 95%。随机尝试 2-3 小时，成功率 40%。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ====== PHASE 7: VERIFICATION ====== -->
+<div class="div"></div>
+<section class="sec ani" id="phase7">
+  <div class="tag tg">Phase 7</div>
+  <h2 class="sh">完成前验证 Verification</h2>
+  <p class="sp" style="margin-bottom:1.5rem">在声称任何事情 "完成" 之前的最后一道关卡</p>
+
+  <div class="phase open">
+    <div class="phase-head" onclick="this.parentElement.classList.toggle('open')">
+      <div class="phase-num" style="border-color:var(--green);color:var(--green)">7</div>
+      <h3>验证五步法</h3>
+      <span class="cmd">superpowers:verification-before-completion</span>
+      <span class="phase-arrow">&#9654;</span>
+    </div>
+    <div class="phase-body">
+      <div class="iron">铁律：没有新鲜验证证据就不声称完成。跳过任何一步 = 撒谎。</div>
+
+      <div class="sub-title">门禁函数（每次声称完成前运行）</div>
+      <ol class="step-list">
+        <li><strong>IDENTIFY</strong> — 什么命令能证明这个声明？</li>
+        <li><strong>RUN</strong> — 执行<em>完整</em>命令（新鲜的，不是缓存的）</li>
+        <li><strong>READ</strong> — 完整阅读输出，检查退出码，计算失败数</li>
+        <li><strong>VERIFY</strong> — 输出是否确认声明？否 → 说明实际状态并附证据；是 → 继续</li>
+        <li><strong>ONLY THEN</strong> — 做出声明</li>
+      </ol>
+
+      <div class="sub-title">常见声明 vs 所需证据</div>
+      <div style="overflow-x:auto">
+        <table class="dtbl">
+          <thead><tr><th>声明</th><th>需要的证据</th><th>不够的</th></tr></thead>
+          <tbody>
+            <tr><td>"测试全通过"</td><td>测试命令输出：0 failures</td><td>上次运行结果、"应该通过"</td></tr>
+            <tr><td>"Bug 已修复"</td><td>复现步骤 → 无法复现</td><td>"改了代码应该修好了"</td></tr>
+            <tr><td>"构建成功"</td><td>构建命令输出：exit 0</td><td>"没看到错误"</td></tr>
+            <tr><td>"需求已实现"</td><td>逐条对照计划，每条有对应代码</td><td>"大部分都做了"</td></tr>
+            <tr><td>"子代理完成了"</td><td>检查 VCS diff、验证实际变更</td><td>信任子代理的报告</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="sub-title">红旗信号</div>
+      <ul style="padding-left:1.5rem;color:var(--red);font-size:.88rem">
+        <li>使用 "应该"、"大概"、"似乎" 等词</li>
+        <li>验证前就表达满意（"太棒了！"、"完美！"、"搞定！"）</li>
+        <li>准备 commit/push/PR 但还没运行验证</li>
+        <li>信任代理/子代理的成功报告</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ====== PHASE 8: CODE REVIEW ====== -->
+<div class="div"></div>
+<section class="sec ani" id="phase8">
+  <div class="tag tp">Phase 8</div>
+  <h2 class="sh">代码审查 Code Review</h2>
+  <p class="sp" style="margin-bottom:1.5rem">请求审查和接收反馈的完整流程</p>
+
+  <div class="phase open">
+    <div class="phase-head" onclick="this.parentElement.classList.toggle('open')">
+      <div class="phase-num" style="border-color:var(--purple);color:var(--purple)">8</div>
+      <h3>审查请求 & 反馈处理</h3>
+      <span class="cmd">superpowers:requesting-code-review</span>
+      <span class="phase-arrow">&#9654;</span>
+    </div>
+    <div class="phase-body">
+      <div class="sub-title">请求审查（3 步）</div>
+      <ol class="step-list">
+        <li><strong>获取 Git SHA</strong>
+          <pre><code>BASE_SHA=$(git rev-parse HEAD~1)  # 或 origin/main
+HEAD_SHA=$(git rev-parse HEAD)</code></pre>
+        </li>
+        <li><strong>分派审查子代理</strong> — 使用 Task 工具，填充审查模板的 5 个占位符：<br>
+          <code>{WHAT_WAS_IMPLEMENTED}</code> 实现了什么<br>
+          <code>{PLAN_OR_REQUIREMENTS}</code> 计划/需求<br>
+          <code>{BASE_SHA}</code> 基础提交<br>
+          <code>{HEAD_SHA}</code> 当前提交<br>
+          <code>{DESCRIPTION}</code> 任务描述
+        </li>
+        <li><strong>处理反馈</strong> — Critical 立即修复 / Important 继续前修复 / Minor 记录待办 / 审查员错了则反驳</li>
+      </ol>
+
+      <div class="sub-title">审查子代理检查清单</div>
+      <ul style="padding-left:1.5rem;color:var(--dim);font-size:.88rem">
+        <li><strong>代码质量</strong> — 关注点分离、错误处理、类型安全、DRY、边界情况</li>
+        <li><strong>架构</strong> — SOLID、可扩展性、性能、安全</li>
+        <li><strong>测试</strong> — 测试逻辑（非 mock）、边界、集成、全部通过</li>
+        <li><strong>需求对齐</strong> — 所有计划需求已实现、无范围蔓延</li>
+        <li><strong>生产就绪</strong> — 迁移策略、向后兼容、文档</li>
+      </ul>
+
+      <div class="sub-title">接收反馈的规则</div>
+      <p>调用 <code>superpowers:receiving-code-review</code> 后：</p>
+      <ul style="padding-left:1.5rem;color:var(--dim);font-size:.88rem">
+        <li><strong>禁止表演性附和</strong> — 不说 "说得太对了！"、"感谢指出！"、"Great point!"</li>
+        <li><strong>先验证再实施</strong> — 确认建议确实是改进</li>
+        <li><strong>错了就反驳</strong> — 用技术论据解释为什么不同意</li>
+        <li><strong>YAGNI 检查</strong> — 对 "更专业" 的建议评估是否真的需要</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ====== PHASE 9: FINISHING ====== -->
+<div class="div"></div>
+<section class="sec ani" id="phase9">
+  <div class="tag tc">Phase 9</div>
+  <h2 class="sh">分支收尾 Finishing</h2>
+  <p class="sp" style="margin-bottom:1.5rem">所有任务完成且测试通过后的最后一步</p>
+
+  <div class="phase open">
+    <div class="phase-head" onclick="this.parentElement.classList.toggle('open')">
+      <div class="phase-num" style="border-color:var(--cyan);color:var(--cyan)">9</div>
+      <h3>四选一收尾操作</h3>
+      <span class="cmd">superpowers:finishing-a-development-branch</span>
+      <span class="phase-arrow">&#9654;</span>
+    </div>
+    <div class="phase-body">
+      <div class="sub-title">流程</div>
+      <ol class="step-list">
+        <li><strong>验证测试</strong> — 运行测试套件。失败则停止，不能继续</li>
+        <li><strong>确定基础分支</strong> — <code>git merge-base HEAD main</code></li>
+        <li><strong>精确提供 4 个选项</strong>（不多不少）</li>
+        <li><strong>执行你的选择</strong></li>
+        <li><strong>清理工作树</strong></li>
+      </ol>
+
+      <div class="sub-title">四个选项详解</div>
+      <div style="overflow-x:auto">
+        <table class="dtbl">
+          <thead><tr><th>选项</th><th>操作</th><th>工作树</th></tr></thead>
+          <tbody>
+            <tr>
+              <td style="font-weight:600">1. 本地合并</td>
+              <td>切换到基础分支 → 拉取最新 → 合并功能分支 → 在合并结果上再次验证测试 → 删除功能分支</td>
+              <td style="color:var(--red)">删除</td>
+            </tr>
+            <tr>
+              <td style="font-weight:600">2. 创建 PR</td>
+              <td><code>git push -u</code> → <code>gh pr create</code>（含摘要和测试计划）</td>
+              <td style="color:var(--red)">删除</td>
+            </tr>
+            <tr>
+              <td style="font-weight:600">3. 保持原样</td>
+              <td>报告分支和工作树位置，不做任何操作</td>
+              <td style="color:var(--green)">保留</td>
+            </tr>
+            <tr>
+              <td style="font-weight:600">4. 丢弃</td>
+              <td>需要你输入 "discard" 确认 → 显示分支名、所有提交、工作树路径 → 强制删除分支</td>
+              <td style="color:var(--red)">删除</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== SKILLS SUMMARY ====== -->
+<div class="div"></div>
+<section class="sec ani" id="skills">
+  <div class="tag tb">Skills Reference</div>
+  <h2 class="sh">技能速查表</h2>
+  <p class="sp" style="margin-bottom:1.5rem">14 项技能的触发条件和调用命令一览</p>
+
+  <div style="overflow-x:auto">
+    <table class="dtbl">
+      <thead><tr><th>技能</th><th>调用命令</th><th>自动触发条件</th><th>铁律</th></tr></thead>
+      <tbody>
+        <tr><td>&#128161; 头脑风暴</td><td><code>superpowers:brainstorming</code></td><td>创建功能、构建组件、修改行为之前</td><td>设计未审批禁止实现</td></tr>
+        <tr><td>&#128221; 编写计划</td><td><code>superpowers:writing-plans</code></td><td>有规格/需求，准备拆解实现步骤时</td><td>禁止占位符</td></tr>
+        <tr><td>&#129302; 子代理开发</td><td><code>superpowers:subagent-driven-development</code></td><td>执行含独立任务的计划时</td><td>双阶段审查不可跳过</td></tr>
+        <tr><td>&#9654; 执行计划</td><td><code>superpowers:executing-plans</code></td><td>在独立会话中执行计划时</td><td>&mdash;</td></tr>
+        <tr><td>&#128308; TDD</td><td><code>superpowers:test-driven-development</code></td><td>写任何生产代码之前</td><td style="color:var(--red)">没有失败测试不写代码</td></tr>
+        <tr><td>&#128027; 系统性调试</td><td><code>superpowers:systematic-debugging</code></td><td>任何 Bug、测试失败、意外行为</td><td style="color:var(--red)">不做根因分析不修复</td></tr>
+        <tr><td>&#9989; 完成前验证</td><td><code>superpowers:verification-before-completion</code></td><td>声称完成/修复/通过之前</td><td style="color:var(--red)">没有证据不声称完成</td></tr>
+        <tr><td>&#128269; 请求审查</td><td><code>superpowers:requesting-code-review</code></td><td>完成任务、合并前</td><td>&mdash;</td></tr>
+        <tr><td>&#128172; 接收审查</td><td><code>superpowers:receiving-code-review</code></td><td>收到反馈时</td><td>禁止表演性附和</td></tr>
+        <tr><td>&#9878; 并行代理</td><td><code>superpowers:dispatching-parallel-agents</code></td><td>2+ 个独立任务</td><td>&mdash;</td></tr>
+        <tr><td>&#127795; Git 工作树</td><td><code>superpowers:using-git-worktrees</code></td><td>需要隔离的功能开发前</td><td>&mdash;</td></tr>
+        <tr><td>&#127937; 分支收尾</td><td><code>superpowers:finishing-a-development-branch</code></td><td>实现完成且测试通过</td><td>&mdash;</td></tr>
+        <tr><td>&#128640; 技能调度</td><td><code>superpowers:using-superpowers</code></td><td>每次会话开始自动注入</td><td>1% 概率就必须调用</td></tr>
+        <tr><td>&#9997; 技能编写</td><td><code>superpowers:writing-skills</code></td><td>创建/编辑/验证技能时</td><td>&mdash;</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ====== FAQ ====== -->
+<div class="div"></div>
+<section class="sec ani" id="faq">
+  <div class="tag ta">FAQ</div>
+  <h2 class="sh">常见问题</h2>
+
+  <div class="acc" onclick="this.classList.toggle('open')">
+    <div class="acc-q"><span>安装后 Claude 没有自动使用技能？</span><span class="arr">&#9654;</span></div>
+    <div class="acc-a"><p>必须启动<strong>新会话</strong>。技能通过 session-start 钩子在新会话启动时注入，旧会话不会生效。用 <code>/clear</code> 也能触发重新注入。</p></div>
+  </div>
+
+  <div class="acc" onclick="this.classList.toggle('open')">
+    <div class="acc-q"><span>能跳过头脑风暴直接写代码吗？</span><span class="arr">&#9654;</span></div>
+    <div class="acc-a"><p>可以。用户指令优先级最高。直接说 "不需要头脑风暴，直接实现 X" 即可。但 Superpowers 的价值正在于这些流程 — 跳过会降低输出质量。</p></div>
+  </div>
+
+  <div class="acc" onclick="this.classList.toggle('open')">
+    <div class="acc-q"><span>子代理开发和执行计划有什么区别？</span><span class="arr">&#9654;</span></div>
+    <div class="acc-a"><p><strong>子代理驱动开发</strong>：每个任务用新鲜子代理、自动双阶段审查、更快更自动化（推荐）。<br><strong>执行计划</strong>：在当前会话逐步执行、分批处理、每批后等你确认。适合需要更多人工介入的场景。</p></div>
+  </div>
+
+  <div class="acc" onclick="this.classList.toggle('open')">
+    <div class="acc-q"><span>子代理一个任务大概花多少钱？</span><span class="arr">&#9654;</span></div>
+    <div class="acc-a"><p>典型成本 $0.05 - $0.15 每个任务。可以用内置分析脚本查看详细 Token 用量：</p><pre><code>python3 tests/claude-code/analyze-token-usage.py ~/.claude/projects/&lt;project-dir&gt;/&lt;session-id&gt;.jsonl</code></pre></div>
+  </div>
+
+  <div class="acc" onclick="this.classList.toggle('open')">
+    <div class="acc-q"><span>Claude 是用什么工具调用技能的？</span><span class="arr">&#9654;</span></div>
+    <div class="acc-a"><p>在 Claude Code 中使用 <code>Skill</code> 工具。Claude 调用后，技能内容会被加载并展示给它。它不会用 <code>Read</code> 工具读取技能文件 — 必须通过 <code>Skill</code> 工具。</p></div>
+  </div>
+
+  <div class="acc" onclick="this.classList.toggle('open')">
+    <div class="acc-q"><span>"你的人类伙伴" 是什么意思？</span><span class="arr">&#9654;</span></div>
+    <div class="acc-a"><p>Superpowers 刻意使用 "your human partner"（你的人类伙伴）而非 "the user"（用户）。这是精心设计的<strong>行为塑造语言</strong> — 让 AI 代理将你视为合作伙伴而非服务对象，影响其决策方式和沟通风格。</p></div>
+  </div>
+
+  <div class="acc" onclick="this.classList.toggle('open')">
+    <div class="acc-q"><span>设计文档和实现计划保存在哪？</span><span class="arr">&#9654;</span></div>
+    <div class="acc-a"><p>默认位置：<br>设计文档：<code>docs/superpowers/specs/YYYY-MM-DD-&lt;topic&gt;-design.md</code><br>实现计划：<code>docs/superpowers/plans/YYYY-MM-DD-&lt;feature&gt;.md</code><br>你可以在 CLAUDE.md 中自定义这些路径。</p></div>
+  </div>
+
+  <div class="acc" onclick="this.classList.toggle('open')">
+    <div class="acc-q"><span>如何创建自己的技能？</span><span class="arr">&#9654;</span></div>
+    <div class="acc-a"><p>在 <code>~/.claude/skills/</code> 下创建目录和 <code>SKILL.md</code> 文件。SKILL.md 需要 YAML 前置数据（name + description）。description 以 "Use when..." 开头，描述触发条件。使用 <code>superpowers:writing-skills</code> 技能来开发和测试新技能。</p></div>
+  </div>
+
+  <div class="acc" onclick="this.classList.toggle('open')">
+    <div class="acc-q"><span>Windows 上钩子不工作？</span><span class="arr">&#9654;</span></div>
+    <div class="acc-a"><p>Superpowers 使用多语言包装器 <code>run-hook.cmd</code> 支持 Windows。它会自动查找 Git Bash（<code>C:\Program Files\Git\bin\bash.exe</code>）。如果 Git 安装在非默认路径，需要手动更新。常见问题：<br>- "bash is not recognized" → Git Bash 路径不对<br>- 脚本在文本编辑器中打开 → hooks.json 指向了 .sh 文件而非 .cmd</p></div>
+  </div>
+</section>
+
+<!-- Footer -->
+<div class="div"></div>
+<footer class="footer">
+  <p><strong>Superpowers</strong> v5.0.7 &middot; Jesse Vincent (Prime Radiant) &middot; MIT License</p>
+  <p style="margin-top:.5rem">
+    <a href="https://github.com/obra/superpowers">GitHub</a> &middot;
+    <a href="https://discord.gg/35wsABTejz">Discord</a> &middot;
+    <a href="https://primeradiant.com/superpowers/">发布公告</a>
+  </p>
+  <p style="margin-top:1rem;font-size:.75rem;color:#4a5568">本文档基于 Superpowers v5.0.7 源码深度分析生成，专注于 Claude Code 平台使用场景</p>
+</footer>
+
+<script>
+const nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>nav.classList.toggle('show',scrollY>innerHeight*.6));
+const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('v')}),{threshold:.06});
+document.querySelectorAll('.ani').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>

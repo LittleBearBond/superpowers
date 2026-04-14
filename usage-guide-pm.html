@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Superpowers 产品经理使用指南</title>
+<style>
+:root{--bg:#fafaf9;--bg2:#fff;--bg3:#f5f5f4;--border:#e7e5e4;--text:#1c1917;--dim:#78716c;--green:#059669;--cyan:#0891b2;--purple:#7c3aed;--pink:#db2777;--amber:#d97706;--red:#dc2626;--blue:#2563eb;--radius:12px;--mono:'SF Mono','Fira Code',Consolas,monospace}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.8;-webkit-font-smoothing:antialiased}
+a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
+code{font-family:var(--mono);font-size:.85em;background:#f0fdf4;color:var(--green);padding:2px 8px;border-radius:6px;border:1px solid #dcfce7}
+pre{background:#1c1917;border-radius:10px;padding:1.2rem 1.5rem;overflow-x:auto;font-family:var(--mono);font-size:.84rem;line-height:1.7;color:#a8a29e;margin:.8rem 0}
+pre code{background:none;padding:0;color:inherit;border:none}
+
+/* nav */
+.nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(250,250,249,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);transform:translateY(-100%);transition:transform .35s}
+.nav.show{transform:translateY(0)}
+.nav-inner{max-width:960px;margin:0 auto;padding:0 2rem;height:54px;display:flex;align-items:center;gap:1.5rem;overflow-x:auto}
+.nav-logo{font-weight:800;font-size:.95rem;color:var(--purple);white-space:nowrap;flex-shrink:0}
+.nav a{color:var(--dim);font-size:.82rem;white-space:nowrap;text-decoration:none;transition:color .2s}.nav a:hover{color:var(--purple);text-decoration:none}
+
+/* hero */
+.hero{padding:8rem 2rem 5rem;text-align:center;background:linear-gradient(180deg,#f3e8ff 0%,var(--bg) 100%)}
+.hero .badge{display:inline-block;padding:5px 16px;border-radius:20px;font-size:.8rem;font-weight:600;color:var(--purple);background:#ede9fe;margin-bottom:1.5rem}
+.hero h1{font-size:clamp(2.2rem,5vw,3.2rem);font-weight:800;color:var(--text);letter-spacing:-1px;line-height:1.2;margin-bottom:1rem}
+.hero h1 span{color:var(--purple)}
+.hero .sub{font-size:1.1rem;color:var(--dim);max-width:580px;margin:0 auto 2rem}
+.hero-note{display:inline-flex;align-items:center;gap:.5rem;padding:8px 20px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;font-size:.88rem;color:var(--dim)}
+
+/* content */
+.content{max-width:760px;margin:0 auto;padding:0 2rem}
+.sec{padding:4rem 0}
+.div-line{height:1px;max-width:760px;margin:0 auto;background:var(--border)}
+
+h2{font-size:1.6rem;font-weight:700;margin-bottom:.4rem;color:var(--text)}
+h3{font-size:1.15rem;font-weight:600;margin:1.5rem 0 .5rem;color:var(--text)}
+h4{font-size:1rem;font-weight:600;margin:1.2rem 0 .4rem;color:var(--text)}
+.sec-desc{color:var(--dim);font-size:1rem;margin-bottom:1.8rem;max-width:600px}
+
+/* tags */
+.tag{display:inline-block;padding:3px 12px;border-radius:16px;font-size:.7rem;text-transform:uppercase;letter-spacing:1.5px;font-weight:700;margin-bottom:.8rem}
+.tag-purple{background:#ede9fe;color:var(--purple)}
+.tag-green{background:#dcfce7;color:var(--green)}
+.tag-amber{background:#fef3c7;color:var(--amber)}
+.tag-blue{background:#dbeafe;color:var(--blue)}
+.tag-pink{background:#fce7f3;color:var(--pink)}
+.tag-red{background:#fee2e2;color:var(--red)}
+
+/* cards */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1rem;transition:box-shadow .2s}
+.card:hover{box-shadow:0 4px 20px rgba(0,0,0,.06)}
+.card h3{margin-top:0}
+.card p,.card li{color:var(--dim);font-size:.92rem}
+.card-icon{font-size:1.6rem;margin-bottom:.6rem}
+.g2{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem}
+.g3{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem}
+
+/* callouts */
+.callout{border-radius:var(--radius);padding:1.2rem 1.4rem;margin:1rem 0;font-size:.92rem}
+.callout-purple{background:#f5f3ff;border-left:4px solid var(--purple);color:#4c1d95}
+.callout-green{background:#f0fdf4;border-left:4px solid var(--green);color:#064e3b}
+.callout-amber{background:#fffbeb;border-left:4px solid var(--amber);color:#78350f}
+.callout-blue{background:#eff6ff;border-left:4px solid var(--blue);color:#1e3a5f}
+.callout-red{background:#fef2f2;border-left:4px solid var(--red);color:#7f1d1d}
+.callout-pink{background:#fdf2f8;border-left:4px solid var(--pink);color:#831843}
+.callout strong{font-weight:700}
+
+/* timeline / steps */
+.journey{position:relative;padding-left:3rem;margin:1.5rem 0}
+.journey::before{content:'';position:absolute;left:15px;top:8px;bottom:8px;width:2px;background:linear-gradient(180deg,var(--purple),var(--pink),var(--green))}
+.j-step{position:relative;margin-bottom:2rem}
+.j-step:last-child{margin-bottom:0}
+.j-dot{position:absolute;left:-3rem;top:3px;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:800;border:2px solid;background:var(--bg)}
+.j-step h4{font-size:1.02rem;font-weight:600;margin:0 0 .3rem}
+.j-step p{color:var(--dim);font-size:.9rem;margin:0}
+.j-step .j-you{margin-top:.5rem;padding:.5rem .8rem;background:#f5f3ff;border-radius:8px;font-size:.85rem;color:var(--purple)}
+.j-step .j-claude{margin-top:.5rem;padding:.5rem .8rem;background:#f0fdf4;border-radius:8px;font-size:.85rem;color:var(--green)}
+
+/* dialog */
+.dialog{margin:1rem 0;display:flex;flex-direction:column;gap:.6rem}
+.msg{max-width:85%;padding:.8rem 1.1rem;border-radius:16px;font-size:.9rem;line-height:1.6}
+.msg-you{align-self:flex-end;background:#7c3aed;color:#fff;border-bottom-right-radius:4px}
+.msg-ai{align-self:flex-start;background:var(--bg3);color:var(--text);border-bottom-left-radius:4px;border:1px solid var(--border)}
+.msg-label{font-size:.7rem;text-transform:uppercase;letter-spacing:1px;font-weight:600;margin-bottom:.2rem}
+.msg-you .msg-label{color:rgba(255,255,255,.7)}
+.msg-ai .msg-label{color:var(--dim)}
+
+/* comparison */
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1rem 0}
+.compare-col{padding:1.2rem;border-radius:var(--radius);font-size:.9rem}
+.compare-bad{background:#fef2f2;border:1px solid #fecaca}
+.compare-bad h4{color:var(--red);margin-top:0}
+.compare-good{background:#f0fdf4;border:1px solid #bbf7d0}
+.compare-good h4{color:var(--green);margin-top:0}
+
+/* checklist */
+.checklist{list-style:none;padding:0;margin:.5rem 0}
+.checklist li{padding:.5rem 0 .5rem 2rem;position:relative;color:var(--dim);font-size:.9rem;border-bottom:1px solid var(--border)}
+.checklist li:last-child{border-bottom:none}
+.checklist li::before{content:'';position:absolute;left:0;top:.7rem;width:18px;height:18px;border-radius:4px;border:2px solid var(--border)}
+.checklist li.done::before{background:var(--green);border-color:var(--green);content:'';background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2.5-2.5a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3E%3C/svg%3E");background-size:12px;background-repeat:no-repeat;background-position:center}
+
+/* table */
+.tbl{width:100%;border-collapse:collapse;margin:1rem 0;font-size:.9rem}
+.tbl th,.tbl td{padding:.7rem 1rem;text-align:left;border-bottom:1px solid var(--border)}
+.tbl th{background:var(--bg3);color:var(--dim);font-size:.75rem;text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.tbl td{color:var(--dim)}.tbl tr:hover td{background:var(--bg3)}
+
+/* accordion */
+.acc{border:1px solid var(--border);border-radius:var(--radius);margin-bottom:.6rem;overflow:hidden;background:var(--bg2)}
+.acc-q{padding:.9rem 1.3rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-weight:600;font-size:.92rem;transition:background .15s}
+.acc-q:hover{background:var(--bg3)}
+.acc-q .arr{transition:transform .25s;color:var(--dim);font-size:.8rem}
+.acc.open .acc-q .arr{transform:rotate(90deg)}
+.acc-a{display:none;padding:0 1.3rem 1.1rem;color:var(--dim);font-size:.9rem}
+.acc.open .acc-a{display:block}
+
+/* number highlight */
+.num-hl{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;font-weight:700;font-size:.82rem;margin-right:.4rem;flex-shrink:0}
+
+.footer{text-align:center;padding:3rem 2rem;border-top:1px solid var(--border);color:var(--dim);font-size:.85rem;margin-top:2rem}
+
+@media(max-width:768px){.g2,.g3,.compare{grid-template-columns:1fr}.content{padding:0 1.2rem}.sec{padding:3rem 0}}
+.ani{opacity:0;transform:translateY(20px);transition:all .5s ease}.ani.v{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav class="nav" id="nav">
+<div class="nav-inner">
+  <span class="nav-logo">Superpowers PM Guide</span>
+  <a href="#what">是什么</a>
+  <a href="#value">价值</a>
+  <a href="#install">安装</a>
+  <a href="#journey">完整旅程</a>
+  <a href="#interact">对话示例</a>
+  <a href="#decisions">你的决策点</a>
+  <a href="#deliverables">产出物</a>
+  <a href="#tips">使用技巧</a>
+  <a href="#faq">常见问题</a>
+</div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="badge">产品经理专版</div>
+  <h1>用 <span>Superpowers</span><br>让 AI 像专业工程师一样工作</h1>
+  <p class="sub">不需要写代码，不需要懂技术细节。只需要描述你想要什么，Superpowers 会让 AI 按照专业软件工程流程帮你实现。</p>
+  <div class="hero-note">
+    &#128218;&nbsp; 本指南假设你使用 Claude Code，全程无需编码经验
+  </div>
+</section>
+
+<!-- What -->
+<div class="div-line"></div>
+<div class="content">
+<section class="sec ani" id="what">
+  <div class="tag tag-purple">What is it</div>
+  <h2>Superpowers 是什么？</h2>
+  <p class="sec-desc">一句话：它是 AI 编程助手的 "工作纪律系统"。</p>
+
+  <div class="card">
+    <h3>想象一下这个场景</h3>
+    <p>你对 Claude 说："帮我做一个用户反馈收集功能。"</p>
+    <p style="margin-top:.8rem"><strong>没有 Superpowers 时</strong>，Claude 可能直接开始写代码 — 它猜测你想要什么、跳过测试、写完后说 "搞定了"。你不知道它做了什么，出了问题也说不清。</p>
+    <p style="margin-top:.8rem"><strong>有了 Superpowers 后</strong>，Claude 会像一个专业工程师那样工作：先问你一系列问题搞清楚需求，提出几个方案让你选，写出设计文档给你确认，然后才开始一步步实现 — 而且每一步都有测试和审查。</p>
+  </div>
+
+  <div class="callout callout-purple">
+    <strong>类比：</strong>如果说 Claude 是一个新入职的工程师，那 Superpowers 就是他的 "入职培训手册" + "工作流程规范" + "代码审查制度"。它不会改变 Claude 的能力，但会改变 Claude 的<strong>工作方式</strong>。
+  </div>
+</section>
+
+<!-- Value -->
+<div class="div-line"></div>
+<section class="sec ani" id="value">
+  <div class="tag tag-green">Why it matters</div>
+  <h2>对产品经理的价值</h2>
+  <p class="sec-desc">你不需要关心背后的技术原理，只需要知道它能帮你做什么。</p>
+
+  <div class="g2">
+    <div class="card">
+      <div class="card-icon">&#128172;</div>
+      <h3>需求不会被误解</h3>
+      <p>Claude 会<strong>逐个问题</strong>澄清你的想法，而不是猜测你想要什么。你会看到一份设计文档，确认无误后才开始开发。</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">&#128196;</div>
+      <h3>过程可见、可追溯</h3>
+      <p>每个阶段都有<strong>文档产出</strong>：设计文档、实现计划、代码审查报告。你可以随时查看进度，知道做了什么、为什么这样做。</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">&#9989;</div>
+      <h3>质量有保障</h3>
+      <p>自动执行测试驱动开发、代码审查、完成前验证。Claude 不能说 "应该没问题" — 必须<strong>拿出证据</strong>证明代码可用。</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">&#128337;</div>
+      <h3>可以自主运行数小时</h3>
+      <p>一旦你批准了设计和计划，Claude 可以<strong>自主执行</strong>几个小时而不偏离目标。你不需要一直盯着。</p>
+    </div>
+  </div>
+</section>
+
+<!-- Install -->
+<div class="div-line"></div>
+<section class="sec ani" id="install">
+  <div class="tag tag-blue">Getting Started</div>
+  <h2>3 分钟完成安装</h2>
+  <p class="sec-desc">只需要一条命令，不需要任何编程知识。</p>
+
+  <div class="card">
+    <h3>步骤一：打开 Claude Code</h3>
+    <p>在终端中启动 Claude Code。如果你已经在使用 Claude Code，直接进行下一步。</p>
+  </div>
+
+  <div class="card">
+    <h3>步骤二：输入安装命令</h3>
+    <p>在 Claude Code 中输入以下内容并回车：</p>
+    <pre><code>/plugin install superpowers@claude-plugins-official</code></pre>
+    <p style="margin-top:.5rem">等待安装完成，看到成功提示即可。</p>
+  </div>
+
+  <div class="card">
+    <h3>步骤三：开始新会话</h3>
+    <p>安装完成后，<strong>必须开始一个新会话</strong>（关闭当前会话再打开，或输入 <code>/clear</code>）。Superpowers 在新会话启动时自动加载。</p>
+  </div>
+
+  <div class="callout callout-green">
+    <strong>验证安装成功：</strong>在新会话中说 "帮我设计一个新功能"。如果 Claude 回复中提到了 "brainstorming" 或开始问你澄清问题（而不是直接写代码），说明安装成功了。
+  </div>
+</section>
+
+<!-- Journey -->
+<div class="div-line"></div>
+<section class="sec ani" id="journey">
+  <div class="tag tag-pink">Your Journey</div>
+  <h2>你和 Claude 的完整协作旅程</h2>
+  <p class="sec-desc">从 "我想做一个 X" 到交付完成，每一步你会看到什么、需要做什么。</p>
+
+  <!-- Stage 1 -->
+  <div class="card" style="border-left:4px solid var(--amber)">
+    <div style="display:flex;align-items:center;gap:.8rem;margin-bottom:1rem">
+      <span class="num-hl" style="background:#fef3c7;color:var(--amber)">1</span>
+      <h3 style="margin:0">头脑风暴阶段</h3>
+      <span class="tag tag-amber" style="margin:0;font-size:.65rem">约 10-30 分钟</span>
+    </div>
+
+    <p><strong>发生了什么：</strong>Claude 不会直接写代码。它会先退一步，像一个产品设计师和你对话。</p>
+
+    <div class="journey" style="margin-top:1.2rem">
+      <div class="j-step">
+        <div class="j-dot" style="border-color:var(--amber);color:var(--amber);font-size:.7rem">1</div>
+        <h4>Claude 了解项目现状</h4>
+        <p>它会自动查看你项目中的文件和最近的改动，了解背景。</p>
+        <div class="j-claude">Claude 在做：查看项目文件、文档、git 历史</div>
+      </div>
+      <div class="j-step">
+        <div class="j-dot" style="border-color:var(--amber);color:var(--amber);font-size:.7rem">2</div>
+        <h4>逐个问你问题</h4>
+        <p>每次只问一个问题，很多时候会给你选项让你选。不会一次扔给你 10 个问题。</p>
+        <div class="j-you">你需要做：回答 Claude 的问题，选择你偏好的选项</div>
+      </div>
+      <div class="j-step">
+        <div class="j-dot" style="border-color:var(--amber);color:var(--amber);font-size:.7rem">3</div>
+        <h4>提出 2-3 种方案</h4>
+        <p>Claude 始终会提供多个方案，每个附带优缺点分析和推荐理由。它不会只给你一个方案。</p>
+        <div class="j-you">你需要做：选择一个方案，或者说 "我更倾向 A 但是想把 B 的某个优点也加进来"</div>
+      </div>
+      <div class="j-step">
+        <div class="j-dot" style="border-color:var(--amber);color:var(--amber);font-size:.7rem">4</div>
+        <h4>分段展示设计</h4>
+        <p>不会一次性丢一个 50 页的文档。Claude 会分段展示设计：先是整体架构，然后是各个组件，再到数据流、错误处理等。每段结束后它会问你 "这部分看起来对吗？"</p>
+        <div class="j-you">你需要做：确认每个部分，提出疑问或修改意见</div>
+      </div>
+      <div class="j-step">
+        <div class="j-dot" style="border-color:var(--amber);color:var(--amber);font-size:.7rem">5</div>
+        <h4>写出设计文档并保存</h4>
+        <p>所有部分确认后，Claude 会把完整设计保存为一个 Markdown 文件。</p>
+        <div class="j-you">你需要做：最终审阅设计文档。这是最后的把关 — 确认后 Claude 才会进入实现</div>
+      </div>
+    </div>
+
+    <div class="callout callout-amber">
+      <strong>关键规则：</strong>在你审批设计之前，Claude 不会写任何代码。即使你的需求 "很简单"，也会走这个流程。这是为了确保 Claude 真正理解了你想要什么。
+    </div>
+  </div>
+
+  <!-- Stage 2 -->
+  <div class="card" style="border-left:4px solid var(--purple)">
+    <div style="display:flex;align-items:center;gap:.8rem;margin-bottom:1rem">
+      <span class="num-hl" style="background:#ede9fe;color:var(--purple)">2</span>
+      <h3 style="margin:0">计划阶段</h3>
+      <span class="tag tag-purple" style="margin:0;font-size:.65rem">约 5-15 分钟</span>
+    </div>
+
+    <p><strong>发生了什么：</strong>Claude 把设计拆分成一个个小任务，像拼积木一样组织好。每个任务小到可以在几分钟内完成。</p>
+
+    <div class="journey" style="margin-top:1.2rem">
+      <div class="j-step">
+        <div class="j-dot" style="border-color:var(--purple);color:var(--purple);font-size:.7rem">1</div>
+        <h4>Claude 创建隔离工作区</h4>
+        <p>在一个独立的分支上工作，不影响已有代码。就像在草稿纸上画，画完再决定要不要正式采用。</p>
+        <div class="j-claude">Claude 在做：创建 git 工作树、安装项目依赖、验证测试基线</div>
+      </div>
+      <div class="j-step">
+        <div class="j-dot" style="border-color:var(--purple);color:var(--purple);font-size:.7rem">2</div>
+        <h4>写出详细的实现计划</h4>
+        <p>每个任务都包含：要创建/修改哪些文件、具体的代码内容、验证方法。计划文件也会保存下来。</p>
+        <div class="j-claude">Claude 在做：把设计拆分为 2-5 分钟的小任务，每个任务有明确的验收标准</div>
+      </div>
+      <div class="j-step">
+        <div class="j-dot" style="border-color:var(--purple);color:var(--purple);font-size:.7rem">3</div>
+        <h4>选择执行方式</h4>
+        <p>Claude 会问你怎么执行这个计划。推荐的方式是 "子代理驱动" — Claude 会自动分派小助手来并行完成任务。</p>
+        <div class="j-you">你需要做：选择执行方式（一般选推荐的就好）</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stage 3 -->
+  <div class="card" style="border-left:4px solid var(--green)">
+    <div style="display:flex;align-items:center;gap:.8rem;margin-bottom:1rem">
+      <span class="num-hl" style="background:#dcfce7;color:var(--green)">3</span>
+      <h3 style="margin:0">实现阶段</h3>
+      <span class="tag tag-green" style="margin:0;font-size:.65rem">可自主运行数小时</span>
+    </div>
+
+    <p><strong>发生了什么：</strong>这是 Claude 自主工作的阶段。它会自动完成所有编码、测试、审查工作。你可以去做别的事。</p>
+
+    <div class="journey" style="margin-top:1.2rem">
+      <div class="j-step">
+        <div class="j-dot" style="border-color:var(--green);color:var(--green);font-size:.7rem">1</div>
+        <h4>逐任务开发</h4>
+        <p>对每个任务，Claude 分派一个 "子代理"（可以理解为一个专注的小助手）来完成。子代理会：</p>
+        <ul style="padding-left:1.2rem;color:var(--dim);font-size:.9rem;margin-top:.3rem">
+          <li>先写测试（证明功能应该怎么工作）</li>
+          <li>再写代码（让测试通过）</li>
+          <li>自己检查一遍</li>
+        </ul>
+        <div class="j-claude">Claude 在做：分派子代理 → 实现 → 测试 → 自审 → 提交代码</div>
+      </div>
+      <div class="j-step">
+        <div class="j-dot" style="border-color:var(--green);color:var(--green);font-size:.7rem">2</div>
+        <h4>双阶段质量审查</h4>
+        <p>每个任务完成后，Claude 会派<strong>两个独立的审查员</strong>检查：</p>
+        <ul style="padding-left:1.2rem;color:var(--dim);font-size:.9rem;margin-top:.3rem">
+          <li><strong>审查员 1：</strong>检查 "做的对不对" — 实现是否符合计划要求？</li>
+          <li><strong>审查员 2：</strong>检查 "做的好不好" — 代码质量、架构、测试是否到位？</li>
+        </ul>
+        <div class="j-claude">Claude 在做：分派审查子代理，如发现问题则让实现者修复，直到两个审查都通过</div>
+      </div>
+      <div class="j-step">
+        <div class="j-dot" style="border-color:var(--green);color:var(--green);font-size:.7rem">3</div>
+        <h4>遇到问题时自动调试</h4>
+        <p>如果某个测试失败或出了 Bug，Claude 不会随便改改碰运气。它有一套严格的四步诊断流程：先找原因，再验证假设，最后才修复。如果修了 3 次还没修好，它会停下来重新审视整个方案。</p>
+        <div class="j-claude">Claude 在做：根因分析 → 模式对比 → 假设验证 → 定向修复</div>
+      </div>
+    </div>
+
+    <div class="callout callout-green">
+      <strong>你可以放手：</strong>这个阶段通常不需要你参与。Claude 会自己跑完所有任务。你可以去开会、处理其他工作，回来后检查结果即可。
+    </div>
+  </div>
+
+  <!-- Stage 4 -->
+  <div class="card" style="border-left:4px solid var(--blue)">
+    <div style="display:flex;align-items:center;gap:.8rem;margin-bottom:1rem">
+      <span class="num-hl" style="background:#dbeafe;color:var(--blue)">4</span>
+      <h3 style="margin:0">收尾阶段</h3>
+      <span class="tag tag-blue" style="margin:0;font-size:.65rem">约 2-5 分钟</span>
+    </div>
+
+    <p><strong>发生了什么：</strong>所有任务完成且测试通过后，Claude 让你决定怎么处理这些代码。</p>
+
+    <div class="journey" style="margin-top:1.2rem">
+      <div class="j-step">
+        <div class="j-dot" style="border-color:var(--blue);color:var(--blue);font-size:.7rem">1</div>
+        <h4>Claude 确认所有测试通过</h4>
+        <p>它会运行完整的测试套件，确认一切正常。如果有失败的测试，会先修复。</p>
+      </div>
+      <div class="j-step">
+        <div class="j-dot" style="border-color:var(--blue);color:var(--blue);font-size:.7rem">2</div>
+        <h4>给你四个选项</h4>
+        <div class="j-you">你需要选一个：<br>
+          <strong>1. 合并</strong> — 把代码合并到主分支（立即生效）<br>
+          <strong>2. 创建 PR</strong> — 推送代码并创建 Pull Request（让团队审查）<br>
+          <strong>3. 先放着</strong> — 保持现状，你稍后再处理<br>
+          <strong>4. 丢弃</strong> — 不要这些代码了（需要输入 "discard" 确认）
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-blue">
+      <strong>推荐做法：</strong>如果你在一个团队中工作，选 "创建 PR" 最安全 — 团队成员可以在合并前审查代码。如果是个人项目，"合并" 更快捷。
+    </div>
+  </div>
+</section>
+
+<!-- Interaction Examples -->
+<div class="div-line"></div>
+<section class="sec ani" id="interact">
+  <div class="tag tag-purple">Examples</div>
+  <h2>对话示例：你和 Claude 怎么交流</h2>
+  <p class="sec-desc">真实场景下的对话流程，帮你建立预期。</p>
+
+  <h3>场景：开发一个用户反馈功能</h3>
+  <div class="dialog">
+    <div class="msg msg-you"><div class="msg-label">你</div>帮我做一个用户反馈收集功能，让用户可以提交问题反馈和功能建议。</div>
+    <div class="msg msg-ai"><div class="msg-label">Claude</div>我正在使用 brainstorming 技能来设计这个功能。<br><br>我先看一下项目现状...<br><br>关于这个反馈功能，我想先了解一个问题：<br><br>反馈的<strong>主要受众</strong>是什么角色？<br><br>A) 终端用户（产品的使用者）<br>B) 内部团队（同事、测试人员）<br>C) 两者都有</div>
+    <div class="msg msg-you"><div class="msg-label">你</div>A，主要是终端用户</div>
+    <div class="msg msg-ai"><div class="msg-label">Claude</div>明白。那用户提交反馈后，你希望<strong>怎么处理</strong>这些反馈？<br><br>A) 只是收集存储，后台看一个列表就行<br>B) 需要一个管理后台，能标记状态（待处理/处理中/已解决）<br>C) 需要更完整的流程，包括回复用户、优先级排序等</div>
+    <div class="msg msg-you"><div class="msg-label">你</div>B，我需要能标记状态的管理后台</div>
+    <div class="msg msg-ai"><div class="msg-label">Claude</div>好的，我有几个方案：<br><br><strong>方案 A（推荐）：内嵌反馈面板</strong><br>优点：用户无需离开当前页面，体验流畅<br>缺点：开发量稍大<br><br><strong>方案 B：独立反馈页面</strong><br>优点：开发简单，好维护<br>缺点：用户需要跳转<br><br><strong>方案 C：浮动按钮 + 弹窗</strong><br>优点：始终可见，随时提交<br>缺点：会占据界面空间<br><br>我推荐方案 A，因为...</div>
+    <div class="msg msg-you"><div class="msg-label">你</div>方案 A 听起来不错，就用这个</div>
+    <div class="msg msg-ai"><div class="msg-label">Claude</div>好的，让我来展示设计。先从整体架构开始：<br><br><strong>架构概览</strong><br>前端：一个可滑出的侧边面板组件...<br>后端：一个 RESTful API...<br>数据库：一张 feedbacks 表...<br><br>这部分设计看起来合理吗？</div>
+  </div>
+
+  <div class="callout callout-purple">
+    <strong>注意这个模式：</strong>Claude 会一个问题一个问题地问你、给你选项让你选、展示方案让你挑、分段展示设计让你确认。你不需要一次性把所有需求写清楚 — Claude 会引导你一步步完善。
+  </div>
+
+  <h3 style="margin-top:2rem">你可以随时说的话</h3>
+  <div style="overflow-x:auto">
+    <table class="tbl">
+      <thead><tr><th>你想做的</th><th>你可以说</th></tr></thead>
+      <tbody>
+        <tr><td>改变方向</td><td>"等一下，我改主意了，其实我想要..."</td></tr>
+        <tr><td>跳过某个阶段</td><td>"不需要头脑风暴了，我已经想清楚了，直接按这个做..."</td></tr>
+        <tr><td>看看进度</td><td>"现在做到哪了？完成了几个任务？"</td></tr>
+        <tr><td>暂停</td><td>"先停一下，我有个问题想确认"</td></tr>
+        <tr><td>简化需求</td><td>"这个太复杂了，我们先做一个最简单的版本"</td></tr>
+        <tr><td>添加需求</td><td>"对了，我还想要一个导出功能"（但建议在设计阶段提出）</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- Decisions -->
+<div class="div-line"></div>
+<section class="sec ani" id="decisions">
+  <div class="tag tag-amber">Decisions</div>
+  <h2>你需要做哪些决策？</h2>
+  <p class="sec-desc">在整个过程中，Claude 会在几个关键节点需要你的判断。</p>
+
+  <div style="overflow-x:auto">
+    <table class="tbl">
+      <thead><tr><th>时机</th><th>Claude 会问你什么</th><th>怎么回答</th></tr></thead>
+      <tbody>
+        <tr>
+          <td style="font-weight:600;white-space:nowrap">需求澄清</td>
+          <td>关于功能目的、受众、约束的具体问题</td>
+          <td>选择给出的选项，或用你自己的话描述</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;white-space:nowrap">方案选择</td>
+          <td>"推荐方案 A / B / C，你选哪个？"</td>
+          <td>选一个，或者混搭（"A 的整体方案 + B 的某个特点"）</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;white-space:nowrap">设计确认</td>
+          <td>"这部分设计看起来对吗？"</td>
+          <td>"没问题" / "这里我有个疑问..." / "这里我想改一下..."</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;white-space:nowrap">设计文档审批</td>
+          <td>"设计文档写好了，请审阅"</td>
+          <td>看一遍确认没问题就说 "可以了，开始做吧"</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;white-space:nowrap">执行方式</td>
+          <td>"用子代理驱动还是内联执行？"</td>
+          <td>选推荐选项（子代理驱动）即可</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;white-space:nowrap">收尾操作</td>
+          <td>"合并 / 创建 PR / 先放着 / 丢弃？"</td>
+          <td>根据你的工作流选择。团队项目建议选 "创建 PR"</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout callout-amber">
+    <strong>一个原则：</strong>如果你不确定某个选项的含义，直接问 Claude。它会用通俗的语言解释。你永远不需要 "假装懂技术"。
+  </div>
+</section>
+
+<!-- Deliverables -->
+<div class="div-line"></div>
+<section class="sec ani" id="deliverables">
+  <div class="tag tag-green">Deliverables</div>
+  <h2>每个阶段的产出物</h2>
+  <p class="sec-desc">这些是你可以查看、存档、分享给团队的实体文件。</p>
+
+  <div class="card" style="border-left:4px solid var(--amber)">
+    <h3>&#128196; 设计文档</h3>
+    <p><strong>产生时机：</strong>头脑风暴阶段结束时</p>
+    <p><strong>保存位置：</strong><code>docs/superpowers/specs/</code> 目录下</p>
+    <p><strong>包含内容：</strong>功能概述、架构设计、组件定义、数据流、错误处理策略、测试策略</p>
+    <p><strong>用途：</strong>需求确认的凭证、团队沟通的基础、后续维护的参考</p>
+  </div>
+
+  <div class="card" style="border-left:4px solid var(--purple)">
+    <h3>&#128221; 实现计划</h3>
+    <p><strong>产生时机：</strong>计划阶段结束时</p>
+    <p><strong>保存位置：</strong><code>docs/superpowers/plans/</code> 目录下</p>
+    <p><strong>包含内容：</strong>拆解后的任务列表，每个任务有明确的文件路径、代码内容、验证方法</p>
+    <p><strong>用途：</strong>进度跟踪、工作量评估、质量验收的参照</p>
+  </div>
+
+  <div class="card" style="border-left:4px solid var(--green)">
+    <h3>&#9989; 代码 + 测试</h3>
+    <p><strong>产生时机：</strong>实现阶段逐步产出</p>
+    <p><strong>保存位置：</strong>项目代码库中（在独立分支上）</p>
+    <p><strong>包含内容：</strong>功能代码 + 每个功能的自动化测试</p>
+    <p><strong>用途：</strong>每个功能都有测试覆盖，确保后续修改不会无意中破坏已有功能</p>
+  </div>
+
+  <div class="card" style="border-left:4px solid var(--blue)">
+    <h3>&#128269; 审查报告</h3>
+    <p><strong>产生时机：</strong>每个任务完成后、全部完成后</p>
+    <p><strong>包含内容：</strong>代码是否符合设计、质量评估、发现的问题及修复情况</p>
+    <p><strong>用途：</strong>质量保障的证据、问题的可追溯性</p>
+  </div>
+</section>
+
+<!-- With vs Without -->
+<div class="div-line"></div>
+<section class="sec ani" id="compare">
+  <div class="tag tag-red">Comparison</div>
+  <h2>有 vs 没有 Superpowers</h2>
+  <p class="sec-desc">同样是让 AI 帮你做功能，体验完全不同。</p>
+
+  <div class="compare">
+    <div class="compare-col compare-bad">
+      <h4>&#10060; 没有 Superpowers</h4>
+      <ul style="padding-left:1.2rem;font-size:.88rem;color:#7f1d1d">
+        <li>Claude 猜测你的需求</li>
+        <li>直接开始写代码</li>
+        <li>不写测试或很少测试</li>
+        <li>出 Bug 时随便改改碰运气</li>
+        <li>说 "搞定了" 但可能没测过</li>
+        <li>没有文档留下来</li>
+        <li>一个月后没人记得为什么这样做</li>
+      </ul>
+    </div>
+    <div class="compare-col compare-good">
+      <h4>&#9989; 有 Superpowers</h4>
+      <ul style="padding-left:1.2rem;font-size:.88rem;color:#064e3b">
+        <li>Claude 逐步澄清需求</li>
+        <li>先写设计文档你确认</li>
+        <li>每个功能都有自动化测试</li>
+        <li>出 Bug 时做根因分析</li>
+        <li>必须跑通测试才能说 "完成"</li>
+        <li>设计文档 + 计划 + 审查报告</li>
+        <li>一个月后打开文档就知道来龙去脉</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- Tips -->
+<div class="div-line"></div>
+<section class="sec ani" id="tips">
+  <div class="tag tag-blue">Best Practices</div>
+  <h2>使用技巧</h2>
+  <p class="sec-desc">让 Superpowers 发挥最大价值的实用建议。</p>
+
+  <div class="card">
+    <h3>&#127919; 描述 "为什么" 比描述 "怎么做" 更重要</h3>
+    <p>与其说 "用 React 做一个表单"，不如说 "用户需要一个提交反馈的方式，要简单快捷，不打断他们的使用流程"。Claude 会帮你找到最好的实现方式。</p>
+  </div>
+
+  <div class="card">
+    <h3>&#9196; 需求在设计阶段提出，实现阶段别加</h3>
+    <p>在头脑风暴阶段尽量把想法都说出来。一旦计划写好并开始实现，中途加需求会导致返工。如果确实想加，可以说 "我们先完成当前的，然后再做一轮迭代"。</p>
+  </div>
+
+  <div class="card">
+    <h3>&#128073; 不确定就选推荐选项</h3>
+    <p>Claude 提供选择时通常会标注推荐选项。如果你不确定技术细节，选推荐的不会错。</p>
+  </div>
+
+  <div class="card">
+    <h3>&#128172; 用你习惯的语言沟通</h3>
+    <p>你不需要说 "请使用 REST API 并实现 CRUD 操作"。说 "我需要能增删改查反馈数据" 就可以了。Claude 会翻译成技术方案。</p>
+  </div>
+
+  <div class="card">
+    <h3>&#9202; 大功能拆小，分批做</h3>
+    <p>如果你想做一个很大的功能（比如 "做一个完整的项目管理系统"），Claude 会建议你拆成几个子项目。建议听从它的建议 — 小步快跑比一口吃成胖子更靠谱。</p>
+  </div>
+
+  <div class="card">
+    <h3>&#128214; 保存好设计文档</h3>
+    <p>设计文档和实现计划是宝贵的资产。它们记录了 "为什么这样做" 的决策过程，对未来的维护和迭代非常有价值。</p>
+  </div>
+</section>
+
+<!-- FAQ -->
+<div class="div-line"></div>
+<section class="sec ani" id="faq">
+  <div class="tag tag-amber">FAQ</div>
+  <h2>产品经理常见问题</h2>
+
+  <div class="acc" onclick="this.classList.toggle('open')">
+    <div class="acc-q"><span>我完全不懂代码，能用 Superpowers 吗？</span><span class="arr">&#9654;</span></div>
+    <div class="acc-a"><p>完全可以。Superpowers 的设计理念之一就是让 AI 像专业工程师一样工作，而你只需要扮演 "需求方" 的角色 — 告诉 Claude 你想要什么，回答它的澄清问题，审批设计方案。所有技术决策由 Claude 处理。</p></div>
+  </div>
+
+  <div class="acc" onclick="this.classList.toggle('open')">
+    <div class="acc-q"><span>整个过程要多长时间？</span><span class="arr">&#9654;</span></div>
+    <div class="acc-a"><p>取决于功能的复杂度。一个简单功能（比如一个反馈表单）：<br>
+    <strong>头脑风暴：</strong>10-20 分钟（需要你参与）<br>
+    <strong>计划编写：</strong>5-10 分钟（基本自动）<br>
+    <strong>实现开发：</strong>30 分钟到数小时（完全自主）<br>
+    <strong>收尾：</strong>2-5 分钟（需要你选择）<br><br>
+    你实际需要参与的时间大约 20-30 分钟。实现阶段你可以去做其他事情。</p></div>
+  </div>
+
+  <div class="acc" onclick="this.classList.toggle('open')">
+    <div class="acc-q"><span>我可以让 Claude 跳过某些步骤吗？</span><span class="arr">&#9654;</span></div>
+    <div class="acc-a"><p>可以，你的指令优先级最高。你可以说 "不需要头脑风暴，直接做"。但不建议这样做 — 头脑风暴阶段正是确保 Claude 理解你需求的关键环节，跳过可能导致做出来的东西不是你想要的。</p></div>
+  </div>
+
+  <div class="acc" onclick="this.classList.toggle('open')">
+    <div class="acc-q"><span>Claude 实现的时候我需要盯着吗？</span><span class="arr">&#9654;</span></div>
+    <div class="acc-a"><p>不需要。设计和计划批准后，Claude 可以自主运行数小时。它有自己的质量保障流程（测试 + 双阶段审查），不需要你实时监督。你回来后可以查看结果，让 Claude 汇报完成情况。</p></div>
+  </div>
+
+  <div class="acc" onclick="this.classList.toggle('open')">
+    <div class="acc-q"><span>"测试驱动开发" 是什么？为什么很重要？</span><span class="arr">&#9654;</span></div>
+    <div class="acc-a"><p>简单地说：在写功能代码之前，先写 "检验功能是否正确" 的测试代码。<br><br>
+    <strong>为什么重要？</strong>就像建房子前先画好图纸，确保每面墙、每根管道都在正确的位置。当代码有变动时，这些测试会自动运行，告诉你有没有不小心弄坏了什么。<br><br>
+    <strong>对你意味着什么？</strong>Claude 交付的代码质量更高、更可靠。未来修改代码时，测试会自动检测出问题，避免 "改了这里坏了那里" 的情况。</p></div>
+  </div>
+
+  <div class="acc" onclick="this.classList.toggle('open')">
+    <div class="acc-q"><span>"双阶段审查" 是什么？</span><span class="arr">&#9654;</span></div>
+    <div class="acc-a"><p>想象一下工厂的两道质检：<br><br>
+    <strong>第一道（规格合规）：</strong>"检查做的东西对不对" — 一个独立的检查员拿着设计图纸，逐条对照实际产品，确认没有遗漏、没有多做、没有做错。<br><br>
+    <strong>第二道（代码质量）：</strong>"检查做工好不好" — 另一个检查员检查代码的组织、可读性、健壮性，就像检查焊接是否牢固、表面是否光滑。<br><br>
+    两个检查员是独立的 — 第一个只管 "对不对"，第二个只管 "好不好"。这比一个人又当运动员又当裁判可靠得多。</p></div>
+  </div>
+
+  <div class="acc" onclick="this.classList.toggle('open')">
+    <div class="acc-q"><span>"子代理" 是什么？</span><span class="arr">&#9654;</span></div>
+    <div class="acc-a"><p>你可以理解为 Claude 的 "分身术"。<br><br>主 Claude 是项目经理，它会分派多个 "小 Claude"（子代理）去完成具体的编码任务。每个子代理是全新的、专注于一个任务的。做完后向主 Claude 汇报，主 Claude 再派审查子代理检查。<br><br>好处是：每个子代理都很专注，不会被其他任务的信息干扰，出错概率更低。</p></div>
+  </div>
+
+  <div class="acc" onclick="this.classList.toggle('open')">
+    <div class="acc-q"><span>做出来的代码，之后可以让真人工程师维护吗？</span><span class="arr">&#9654;</span></div>
+    <div class="acc-a"><p>完全可以。Superpowers 产出的代码比普通 AI 生成的代码更适合人类维护：<br><br>
+    - 有完整的<strong>设计文档</strong>解释为什么这样做<br>
+    - 有详细的<strong>实现计划</strong>说明每个部分的用途<br>
+    - 有自动化<strong>测试</strong>保障修改安全<br>
+    - 代码经过<strong>质量审查</strong>，符合工程标准<br><br>
+    工程师接手时不需要猜 "这段代码想做什么" — 打开设计文档就能看到完整的决策过程。</p></div>
+  </div>
+
+  <div class="acc" onclick="this.classList.toggle('open')">
+    <div class="acc-q"><span>会花多少钱？</span><span class="arr">&#9654;</span></div>
+    <div class="acc-a"><p>Superpowers 插件本身是<strong>免费的</strong>（MIT 开源协议）。费用来自 Claude 的 API 调用。由于 Superpowers 会分派多个子代理，API 使用量会比不用 Superpowers 时更高。<br><br>
+    典型参考：一个子代理完成一个小任务大约花费 $0.05 - $0.15。一个中等复杂度的功能可能有 5-10 个任务，加上审查，总计约 $1 - $3。<br><br>
+    但考虑到质量提升（有测试、有审查、有文档），性价比很高。</p></div>
+  </div>
+
+  <div class="acc" onclick="this.classList.toggle('open')">
+    <div class="acc-q"><span>如果 Claude 做的东西不是我想要的怎么办？</span><span class="arr">&#9654;</span></div>
+    <div class="acc-a"><p>这正是 Superpowers 的价值所在 — 它通过<strong>分阶段确认</strong>大大降低了这种风险：<br><br>
+    - 在头脑风暴阶段，你已经确认了需求<br>
+    - 在方案选择时，你选了实现方式<br>
+    - 在设计审批时，你确认了具体设计<br><br>
+    如果到了收尾阶段才发现不满意，你可以选 "丢弃"，然后重新开始。由于代码在隔离的分支上开发，丢弃不会影响任何已有代码。<br><br>
+    但如果你认真参与了前面的确认环节，很少会出现 "完全不是我想要的" 这种情况。</p></div>
+  </div>
+</section>
+
+<!-- Quick Reference -->
+<div class="div-line"></div>
+<section class="sec ani" id="quickref">
+  <div class="tag tag-purple">Quick Reference</div>
+  <h2>速查卡</h2>
+  <p class="sec-desc">贴在电脑旁边随时查看。</p>
+
+  <div class="card" style="background:#f5f3ff;border-color:#c4b5fd">
+    <h3 style="text-align:center;margin-bottom:1rem">Superpowers 工作流速查</h3>
+    <div style="overflow-x:auto">
+      <table class="tbl" style="margin:0">
+        <thead><tr><th>阶段</th><th>你做什么</th><th>Claude 做什么</th><th>产出</th></tr></thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--amber)">&#128161; 头脑风暴</td>
+            <td>回答问题<br>选择方案<br>确认设计</td>
+            <td>提问澄清<br>提出方案<br>分段展示设计</td>
+            <td>设计文档</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600;color:var(--purple)">&#128221; 计划</td>
+            <td>选执行方式</td>
+            <td>创建工作区<br>拆分任务<br>写计划文件</td>
+            <td>实现计划</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600;color:var(--green)">&#129302; 实现</td>
+            <td>可以去做别的事</td>
+            <td>分派子代理<br>编码 + 测试<br>双阶段审查</td>
+            <td>代码 + 测试<br>审查报告</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600;color:var(--blue)">&#127937; 收尾</td>
+            <td>选合并/PR/<br>保留/丢弃</td>
+            <td>验证测试<br>执行你的选择<br>清理工作区</td>
+            <td>合并的代码<br>或 PR</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="margin-top:1.2rem;padding-top:1rem;border-top:1px solid #c4b5fd;font-size:.88rem;color:#4c1d95">
+      <strong>安装：</strong><code>/plugin install superpowers@claude-plugins-official</code><br>
+      <strong>更新：</strong><code>/plugin update superpowers</code><br>
+      <strong>记住：</strong>安装后必须开始新会话才能生效
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- Footer -->
+<div class="div-line"></div>
+<footer class="footer">
+  <p><strong>Superpowers</strong> v5.0.7 &middot; Jesse Vincent (Prime Radiant) &middot; MIT License</p>
+  <p style="margin-top:.5rem"><a href="https://github.com/obra/superpowers">GitHub</a> &middot; <a href="https://discord.gg/35wsABTejz">Discord 社区</a></p>
+  <p style="margin-top:1rem;font-size:.78rem;color:#a8a29e">本文档面向产品经理和非技术用户，基于 Superpowers v5.0.7 源码分析生成</p>
+</footer>
+
+<script>
+const nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>nav.classList.toggle('show',scrollY>500));
+const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('v')}),{threshold:.06});
+document.querySelectorAll('.ani').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>
